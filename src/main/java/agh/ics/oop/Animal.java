@@ -2,12 +2,19 @@ package agh.ics.oop;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Animal implements IMapElement{
     private final IMap map;
     private MapDirection direction = MapDirection.NORTH;
     private Vector2d position;
-    ArrayList<IObserver> observers = new ArrayList<>();
+
+    // just an example, we haven't discussed in what form we want genomes to be
+    int currentGene = 0;
+    int[] genome = {0, 1, 2, 3};
+    //
+
+    ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
     public Animal(IMap map, Vector2d initialPosition){
         this.map = map;
         this.position = initialPosition;
@@ -114,5 +121,18 @@ public class Animal implements IMapElement{
         for(MoveDirection moveDirection: moveDirections){
             this.move(moveDirection);
         }
+    }
+
+	// required by IRuleGenomeExecutioner (unless we change the way it interacts with animals)
+    public void nextGene() {
+        currentGene = (currentGene + 1) % genome.length;
+    }
+
+}
+
+// needed to compare animals in TreeSet in map;
+class AnimalComparatorByPositionX implements Comparator<Animal> {
+    public int compare(Animal o1, Animal o2) {
+        return o1.getPosition().x - o2.getPosition().x;
     }
 }

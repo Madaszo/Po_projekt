@@ -9,22 +9,13 @@ package agh.ics.oop;
  */
 public interface IMap {
     /**
-     * Indicate if any object can move to the given position.
-     *
-     * @param position
-     *            The position checked for the movement possibility.
-     * @return True if the object can move to that position.
-     */
-    boolean canMoveTo(Vector2d position);
-
-    /**
      * Place an object on the map.
      *
      * @param object
      *            The animal to place on the map.
-     * @return True if the animal was placed. The animal cannot be placed if the map is already occupied.
+     * @throws RuntimeException Throws exception if the object couldn't place correctly
      */
-    boolean place(IMapElement object);
+    void place(IMapElement object);
 
     /**
      * Return true if given position on the map is occupied. Should not be
@@ -45,6 +36,12 @@ public interface IMap {
      * @return Object or null if the position is not occupied.
      */
     Object objectAt(Vector2d position);
-    void grassify();
+
+    /**
+     * Spawn n grass patches on the map.
+     *
+     * @param n Number of grass patches to spawn
+     */
+    void spawnGrass(int n);
 
 }
