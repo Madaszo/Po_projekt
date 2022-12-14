@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import java.util.Objects;
+
 /**
  * The map visualizer converts the {@link IMap} map into a string
  * representation.
@@ -71,12 +73,8 @@ public class MapVisualizer {
 	private String drawObject(Vector2d currentPosition) {
 		String result;
 		if (this.map.isOccupied(currentPosition)) {
-			Object object = this.map.objectAt(currentPosition);
-			if (object != null) {
-				result = object.toString();
-			} else {
-				result = EMPTY_CELL;
-			}
+			String tileRepresentation = this.map.positionRepresentation(currentPosition);
+			result = Objects.requireNonNullElse(tileRepresentation, EMPTY_CELL);
 		} else {
 			result = EMPTY_CELL;
 		}

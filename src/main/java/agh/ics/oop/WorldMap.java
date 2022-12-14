@@ -12,7 +12,7 @@ public class WorldMap implements IMap {
 	// a lot of animals can be in one position, so we cannot use any sort of HashMap, because we need to keep
 	// animals in some kind of order
 	// todo Some better way of ordering Animals and their positions?
-	private final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<Vector2d, ArrayList<Animal>>();
+	public final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
 	final int width;
 	final int height;
@@ -34,7 +34,7 @@ public class WorldMap implements IMap {
 		this.genomeExecutioner = genomeExecutioner;
 		this.moveConstrainer = moveConstrainer;
 
-		// animals initialisation
+		// animals HashMap initialisation
 		for (int i = 0; i < this.width; i++) {
 			for (int j = 0; j < this.height; j++) {
 				animals.put(new Vector2d(i, j), new ArrayList<>());
@@ -45,18 +45,20 @@ public class WorldMap implements IMap {
 
 
 	public void place(IMapElement mapOb) {
-		if (mapOb instanceof Animal) {
+		if (mapOb.getClass() == Animal.class) {
 			animals.get(mapOb.getPosition()).add((Animal) mapOb);
+			return;
 		}
 
-		if (mapOb instanceof Grass) {
+		if (mapOb.getClass() == Grass.class) {
 			if (!isOccupiedByGrass(mapOb.getPosition())) {
 				grasses.put(mapOb.getPosition(), (Grass) mapOb);
+				return;
 			} else {
-				throw new RuntimeException("The Grass object couldn't have been added, because there is already a grass object on position: " + mapOb);
+				throw new RuntimeException("The Grass object couldn't have been added, because there already is a grass object on position: " + mapOb);
 			}
 		}
-		throw new RuntimeException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know what to do");
+		throw new RuntimeException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know how to place it");
 	}
 
 	/* not necessary right now
@@ -76,12 +78,18 @@ public class WorldMap implements IMap {
 		return isOccupiedByAnimal(position) || isOccupiedByGrass(position);
 	}
 
-	public Object objectAt(Vector2d position) {
-		final Object ob = animalsAt(position);
-		if (ob != null) {
-			return ob;
+	public String positionRepresentation(Vector2d position) {
+		final List<Animal> anims = animalsAt(position);
+		if (anims == null) {
+			return (grassAt(position) == null) ? "  " : grassAt(position).toString() + " ";
 		}
-		return grassAt(position);
+		if (anims.size() == 1) {
+			return anims.get(0).toString();
+		}
+		if (anims.size() >= 2) {
+			return anims.size() + " ";
+		}
+		return null;
 	}
 
 	@Override
@@ -101,6 +109,7 @@ public class WorldMap implements IMap {
 	}
 
 	public List<Animal> animalsAt(Vector2d position) {
+		System.out.println(animals.get(position));
 		if (!animals.get(position).isEmpty()) {
 			return Collections.unmodifiableList(animals.get(position));
 		}
@@ -117,7 +126,7 @@ public class WorldMap implements IMap {
 
 	public String toString() {
 		MapVisualizer mapVisualizer = new MapVisualizer(this);
-		return mapVisualizer.draw(new Vector2d(0, 0), new Vector2d(width, height));
+		return mapVisualizer.draw(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
 	}
 
 }

@@ -1,18 +1,21 @@
 package agh.ics.oop;
 
-import agh.ics.oop.rules.DeterministicGenomeExecutioner;
-import agh.ics.oop.rules.FullRandomMutationer;
-import agh.ics.oop.rules.GlobeConstraint;
-import agh.ics.oop.rules.GreenEquator;
+import agh.ics.oop.rules.*;
 
 public class Main {
 	public static void main(String[] args) {
-		final IMap map = new WorldMap(10, 10,
+		IRuleGenomeExecution IRGE = new DeterministicGenomeExecutioner();
+		final WorldMap map = new WorldMap(10, 10,
 				new GreenEquator(),
 				new FullRandomMutationer(),
-				new DeterministicGenomeExecutioner(),
+				IRGE,
 				new GlobeConstraint(10, 10));
-		//coś tam
+
+		Animal dog = new Animal(map, new Vector2d(0, 0), IRGE, 20);
+		Animal pig = new Animal(map, new Vector2d(1, 0), IRGE, 30);
+
+
+		System.out.println(map);
 	}
 
 }

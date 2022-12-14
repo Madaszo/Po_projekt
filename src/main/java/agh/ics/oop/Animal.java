@@ -22,6 +22,7 @@ public class Animal implements IMapElement{
     public Animal(IMap map, Vector2d initialPosition,IRuleGenomeExecution IRGE, int energy){
         this.map = map;
         this.position = initialPosition;
+        this.direction = MapDirection.NORTH;
         this.map.place(this);
         this.IRGE = IRGE;
         this.age = 0;
