@@ -9,20 +9,17 @@ public class Vector2d {
         this.x = x;
         this.y = y;
     }
-    public Vector2d directionsToVector(int x){
-        Vector2d w;
-        w = switch (x){
-            case 0 -> new Vector2d(0,1);
-            case 1 -> new Vector2d(1,1);
-            case 2 -> new Vector2d(1,0);
-            case 3 -> new Vector2d(1,-1);
-            case 4 -> new Vector2d(0,-1);
-            case 5 -> new Vector2d(-1,-1);
-            case 6 -> new Vector2d(-1,0);
-            case 7 -> new Vector2d(-1,1);
-            default -> throw new IllegalStateException("Unexpected value: " + x);
+    public Vector2d directionsToVector(MapDirection x){
+        return switch (x){
+            case NORTH -> new Vector2d(0,1);
+            case NORTHEAST -> new Vector2d(1,1);
+            case EAST -> new Vector2d(1,0);
+            case SOUTHEAST -> new Vector2d(1,-1);
+            case SOUTH -> new Vector2d(0,-1);
+            case SOUTHWEST -> new Vector2d(-1,-1);
+            case WEST -> new Vector2d(-1,0);
+            case NORTHWEST -> new Vector2d(-1,1);
         };
-        return w;
     }
     public String toString() {
         return '('+String.valueOf(this.x)+','+ this.y +')';
