@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f1871f71-7368-40d4-a3c7-ef7c1ae5c03e" name="Changes" comment="added lots of classes">
+    <list default="true" id="f1871f71-7368-40d4-a3c7-ef7c1ae5c03e" name="Changes" comment="Animal move added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Animal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Animal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Gene.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/IMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/IMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/IPositionChangeObserver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/IPositionChangeObserver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Vector2d.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Vector2d.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/WorldMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/WorldMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/GlobeConstraint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/GlobeConstraint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/IRuleMoveConstraints.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/IRuleMoveConstraints.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/DeterministicGenomeExecutioner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/DeterministicGenomeExecutioner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/IRuleGenomeExecution.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/IRuleGenomeExecution.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +76,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670596116190</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Animal move added">
+      <created>1670992181478</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1670992181478</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -98,6 +100,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="build" />
     <MESSAGE value="added lots of classes" />
-    <option name="LAST_COMMIT_MESSAGE" value="added lots of classes" />
+    <MESSAGE value="Animal move added" />
+    <option name="LAST_COMMIT_MESSAGE" value="Animal move added" />
   </component>
 </project>

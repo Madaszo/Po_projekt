@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import agh.ics.oop.rules.IRuleGenomeExecution;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,20 +10,22 @@ public class Animal implements IMapElement{
     private final IMap map;
     private int direction = 0;
     private Vector2d position;
+    private IRuleGenomeExecution IRGE;
 
     // just an example, we haven't discussed in what form we want genomes to be
-    int currentGene = 0;
+    public int currentGene = 0;
     int[] genome = {0, 1, 2, 3};
     //
 
     ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
-    public Animal(IMap map, Vector2d initialPosition){
+    public Animal(IMap map, Vector2d initialPosition,IRuleGenomeExecution IRGE){
         this.map = map;
         this.position = initialPosition;
         this.map.place(this);
+        this.IRGE = IRGE;
     }
-    public Animal(IMap map){
-        this(map,new Vector2d(2,2));
+    public Animal(IMap map,IRuleGenomeExecution IRGE){
+        this(map,new Vector2d(2,2),IRGE);
     }
 
     public String toString() {
@@ -80,7 +84,7 @@ public class Animal implements IMapElement{
                 positionChanged(this.position, this.position);
             }
         }
-        this.nextGene();
+        this.IRGE.nextGene(this);
     }
     public void reverseDirection(){this.direction = (this.direction+4)%8;}
     public String getLabel(){
@@ -99,9 +103,6 @@ public class Animal implements IMapElement{
     }
 
 	// required by IRuleGenomeExecutioner (unless we change the way it interacts with animals)
-    public void nextGene() {
-        currentGene = (currentGene + 1) % genome.length;
-    }
 
 }
 
