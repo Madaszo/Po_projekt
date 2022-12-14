@@ -8,6 +8,8 @@ import java.util.ArrayList;
 public class Animal implements IMapElement{
     private final IMap map;
     private MapDirection direction;
+    private int age;
+    private int energy;
     private Vector2d position;
     private IRuleGenomeExecution IRGE;
 
@@ -17,14 +19,13 @@ public class Animal implements IMapElement{
     //
 
     ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
-    public Animal(IMap map, Vector2d initialPosition,IRuleGenomeExecution IRGE){
+    public Animal(IMap map, Vector2d initialPosition,IRuleGenomeExecution IRGE, int energy){
         this.map = map;
         this.position = initialPosition;
         this.map.place(this);
         this.IRGE = IRGE;
-    }
-    public Animal(IMap map,IRuleGenomeExecution IRGE){
-        this(map,new Vector2d(2,2),IRGE);
+        this.age = 0;
+        this.energy = energy;
     }
 
     public String toString() {
