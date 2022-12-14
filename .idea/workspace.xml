@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f1871f71-7368-40d4-a3c7-ef7c1ae5c03e" name="Changes" comment="Animal move added">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Animal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Animal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/DeterministicGenomeExecutioner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/DeterministicGenomeExecutioner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/IRuleGenomeExecution.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/rules/IRuleGenomeExecution.java" afterDir="false" />
-    </list>
+    <list default="true" id="f1871f71-7368-40d4-a3c7-ef7c1ae5c03e" name="Changes" comment="Added SimulationEngine" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,13 +41,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Marcel Duda/Documents/studia/Po_projekt&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/Marcel Duda/Documents/studia/PO/oolab"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -83,7 +78,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670992181478</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added SimulationEngine">
+      <created>1671020312924</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1671020312924</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -101,6 +103,7 @@
     <MESSAGE value="build" />
     <MESSAGE value="added lots of classes" />
     <MESSAGE value="Animal move added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Animal move added" />
+    <MESSAGE value="Added SimulationEngine" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added SimulationEngine" />
   </component>
 </project>
