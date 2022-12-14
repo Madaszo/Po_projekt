@@ -6,7 +6,7 @@ import java.util.Comparator;
 
 public class Animal implements IMapElement{
     private final IMap map;
-    private MapDirection direction = MapDirection.NORTH;
+    private int direction = 0;
     private Vector2d position;
 
     // just an example, we haven't discussed in what form we want genomes to be
@@ -26,16 +26,16 @@ public class Animal implements IMapElement{
 
     public String toString() {
         switch (this.direction){
-            case NORTH -> {
+            case 0 -> {
                 return "^";
             }
-            case SOUTH -> {
+            case 4 -> {
                 return "v";
             }
-            case WEST -> {
+            case 6 -> {
                 return "<";
             }
-            case EAST -> {
+            case 2 -> {
                 return ">";
             }
             default -> throw new IllegalStateException("Unexpected value: " + this.direction);
@@ -49,60 +49,40 @@ public class Animal implements IMapElement{
     @Override
     public String getPath() {
         return switch (direction){
-            case EAST -> "src/main/resources/E.png";
-            case NORTHEAST -> "src/main/resources/NE.png";
-            case WEST -> "src/main/resources/W.png";
-            case NORTHWEST -> "src/main/resources/NW.png";
-            case SOUTH -> "src/main/resources/S.png";
-            case SOUTHEAST -> "src/main/resources/SE.png";
-            case SOUTHWEST -> "src/main/resources/SW.png";
-            case NORTH -> "src/main/resources/N.png";
+            case 2 -> "src/main/resources/E.png";
+            case 1 -> "src/main/resources/NE.png";
+            case 6 -> "src/main/resources/W.png";
+            case 7 -> "src/main/resources/NW.png";
+            case 4 -> "src/main/resources/S.png";
+            case 3 -> "src/main/resources/SE.png";
+            case 5 -> "src/main/resources/SW.png";
+            case 0 -> "src/main/resources/N.png";
+            default -> throw new IllegalStateException("Unexpected direction: "+ this.direction);
         };
     }
 
-    public MapDirection getDirection(){
+    public int getDirection(){
         return this.direction;
     }
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
     }
-    public void move(Gene direction) throws FileNotFoundException {
-        switch (direction) {
-            case LEFT -> {
-                this.direction = this.direction.previous();
-                positionChanged(this.position,this.position);
+    public void move() throws FileNotFoundException {
+        int d = genome[currentGene];
+        switch (d) {
+            case 0 -> {
+                Vector2d newPosition = this.map.move(this);
+                positionChanged(this.position, newPosition);
+                this.position = newPosition;
             }
-
-            case RIGHT -> {
-                this.direction = this.direction.next();
-                positionChanged(this.position,this.position);
-            }
-            case FORWARD -> {
-                Vector2d tmp = this.direction.toUnitVector().add(this.position);
-                if(this.map.canMoveTo(tmp)){
-                    boolean b = this.map.eat(tmp);
-                    positionChanged(this.position,tmp);
-                    this.position = tmp;
-                    if(b){
-                        this.map.grassify();
-                    }
-                }
-            }
-            case BACKWARD -> {
-                Vector2d tmp = this.direction.toUnitVector().opposite().add(this.position);
-                if(this.map.canMoveTo(tmp)) {
-                    boolean b = this.map.eat(tmp);
-                    positionChanged(this.position,tmp);
-                    this.position = tmp;
-                    if(b){
-                        this.map.grassify();
-                    }
-                }
-            }
-            case IGNORE -> {
+            default -> {
+                this.direction = (this.direction + direction) % 8;
+                positionChanged(this.position, this.position);
             }
         }
+        this.nextGene();
     }
+    public void reverseDirection(){this.direction = (this.direction+4)%8;}
     public String getLabel(){
         return getPosition().toString();
     }
@@ -116,11 +96,6 @@ public class Animal implements IMapElement{
     }
     void removeObserver(IPositionChangeObserver observer){
         observers.remove(observer);
-    }
-    public void massMove(MoveDirection[] moveDirections) throws FileNotFoundException {
-        for(MoveDirection moveDirection: moveDirections){
-            this.move(moveDirection);
-        }
     }
 
 	// required by IRuleGenomeExecutioner (unless we change the way it interacts with animals)

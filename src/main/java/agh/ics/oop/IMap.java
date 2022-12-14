@@ -43,5 +43,6 @@ public interface IMap {
      * @param n Number of grass patches to spawn
      */
     void spawnGrass(int n);
+    Vector2d move(Animal animal);
 
 }

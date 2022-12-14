@@ -85,6 +85,11 @@ public class WorldMap implements IMap {
 		}
 	}
 
+	@Override
+	public Vector2d move(Animal animal) {
+		return moveConstrainer.constraints(animal);
+	}
+
 	public boolean isOccupiedByAnimal(Vector2d position) {
 		return animalAt(position) != null;
 	}
