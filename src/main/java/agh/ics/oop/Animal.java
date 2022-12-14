@@ -4,11 +4,12 @@ import agh.ics.oop.rules.IRuleGenomeExecution;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Animal implements IMapElement{
     private final IMap map;
-    private int direction = 0;
+    private MapDirection direction;
+    private int age;
+    private int energy;
     private Vector2d position;
     private IRuleGenomeExecution IRGE;
 
@@ -18,33 +19,17 @@ public class Animal implements IMapElement{
     //
 
     ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
-    public Animal(IMap map, Vector2d initialPosition,IRuleGenomeExecution IRGE){
+    public Animal(IMap map, Vector2d initialPosition,IRuleGenomeExecution IRGE, int energy){
         this.map = map;
         this.position = initialPosition;
         this.map.place(this);
         this.IRGE = IRGE;
-    }
-    public Animal(IMap map,IRuleGenomeExecution IRGE){
-        this(map,new Vector2d(2,2),IRGE);
+        this.age = 0;
+        this.energy = energy;
     }
 
     public String toString() {
-        switch (this.direction){
-            case 0 -> {
-                return "^";
-            }
-            case 4 -> {
-                return "v";
-            }
-            case 6 -> {
-                return "<";
-            }
-            case 2 -> {
-                return ">";
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + this.direction);
-        }
-
+        return direction.toString();
     }
     public Vector2d getPosition(){
         return this.position;
@@ -53,19 +38,18 @@ public class Animal implements IMapElement{
     @Override
     public String getPath() {
         return switch (direction){
-            case 2 -> "src/main/resources/E.png";
-            case 1 -> "src/main/resources/NE.png";
-            case 6 -> "src/main/resources/W.png";
-            case 7 -> "src/main/resources/NW.png";
-            case 4 -> "src/main/resources/S.png";
-            case 3 -> "src/main/resources/SE.png";
-            case 5 -> "src/main/resources/SW.png";
-            case 0 -> "src/main/resources/N.png";
-            default -> throw new IllegalStateException("Unexpected direction: "+ this.direction);
+            case EAST -> "src/main/resources/E.png";
+            case NORTHEAST -> "src/main/resources/NE.png";
+            case WEST -> "src/main/resources/W.png";
+            case NORTHWEST -> "src/main/resources/NW.png";
+            case SOUTH -> "src/main/resources/S.png";
+            case SOUTHEAST -> "src/main/resources/SE.png";
+            case SOUTHWEST -> "src/main/resources/SW.png";
+            case NORTH -> "src/main/resources/N.png";
         };
     }
 
-    public int getDirection(){
+    public MapDirection getDirection(){
         return this.direction;
     }
     public boolean isAt(Vector2d position){
@@ -73,24 +57,21 @@ public class Animal implements IMapElement{
     }
     public void move() throws FileNotFoundException {
         int d = genome[currentGene];
-        switch (d) {
-            case 0 -> {
-                Vector2d newPosition = this.map.move(this);
-                positionChanged(this.position, newPosition);
-                this.position = newPosition;
-            }
-            default -> {
-                this.direction = (this.direction + direction) % 8;
-                positionChanged(this.position, this.position);
-            }
+        if (d == 0) {
+            Vector2d newPosition = this.map.move(this);
+            positionChanged(this.position, newPosition);
+            this.position = newPosition;
+        } else {
+            this.direction = this.direction.rotate(d);
+            positionChanged(this.position, this.position);
         }
         this.IRGE.nextGene(this);
     }
-    public void reverseDirection(){this.direction = (this.direction+4)%8;}
+    public void reverseDirection(){this.direction = this.direction.rotate(4);}
     public String getLabel(){
         return getPosition().toString();
     }
-    void positionChanged(Vector2d oldPosition, Vector2d newPosition) throws FileNotFoundException {
+    void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         for(IPositionChangeObserver observer : observers){
             observer.positionChanged(oldPosition,newPosition);
         }
