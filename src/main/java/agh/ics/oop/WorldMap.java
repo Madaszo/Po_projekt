@@ -5,16 +5,14 @@ import agh.ics.oop.rules.IRuleMoveConstraints;
 import agh.ics.oop.rules.IRuleMutations;
 import agh.ics.oop.rules.IRuleSpawnGrass;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
 // todo WorldMap should implement IPositionChangeObserver
 public class WorldMap implements IMap {
 	// a lot of animals can be in one position, so we cannot use any sort of HashMap, because we need to keep
 	// animals in some kind of order
 	// todo Some better way of ordering Animals and their positions?
-	final private TreeSet<Animal> animals = new TreeSet<>(new AnimalComparatorByPositionX());
+	private final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<Vector2d, ArrayList<Animal>>();
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
 	final int width;
 	final int height;
@@ -35,12 +33,20 @@ public class WorldMap implements IMap {
 		this.mutater = mutater;
 		this.genomeExecutioner = genomeExecutioner;
 		this.moveConstrainer = moveConstrainer;
+
+		// animals initialisation
+		for (int i = 0; i < this.width; i++) {
+			for (int j = 0; j < this.height; j++) {
+				animals.put(new Vector2d(i, j), new ArrayList<>());
+			}
+
+		}
 	}
 
 
 	public void place(IMapElement mapOb) {
 		if (mapOb instanceof Animal) {
-			animals.add((Animal) mapOb);
+			animals.get(mapOb.getPosition()).add((Animal) mapOb);
 		}
 
 		if (mapOb instanceof Grass) {
@@ -71,7 +77,7 @@ public class WorldMap implements IMap {
 	}
 
 	public Object objectAt(Vector2d position) {
-		final Object ob = animalAt(position);
+		final Object ob = animalsAt(position);
 		if (ob != null) {
 			return ob;
 		}
@@ -91,15 +97,12 @@ public class WorldMap implements IMap {
 	}
 
 	public boolean isOccupiedByAnimal(Vector2d position) {
-		return animalAt(position) != null;
+		return animalsAt(position) != null;
 	}
 
-	public Animal animalAt(Vector2d position) {
-		// todo better searching
-		for (Animal animal : animals) {
-			if (animal.getPosition().equals(position)) {
-				return animal;
-			}
+	public List<Animal> animalsAt(Vector2d position) {
+		if (!animals.get(position).isEmpty()) {
+			return Collections.unmodifiableList(animals.get(position));
 		}
 		return null;
 	}

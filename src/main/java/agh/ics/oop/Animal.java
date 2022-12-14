@@ -86,5 +86,3 @@ public class Animal implements IMapElement{
 	// required by IRuleGenomeExecutioner (unless we change the way it interacts with animals)
 
 }
-
-// needed to compare animals in TreeSet in map;
