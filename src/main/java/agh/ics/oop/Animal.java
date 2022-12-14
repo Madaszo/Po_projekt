@@ -105,10 +105,3 @@ public class Animal implements IMapElement{
 	// required by IRuleGenomeExecutioner (unless we change the way it interacts with animals)
 
 }
-
-// needed to compare animals in TreeSet in map;
-class AnimalComparatorByPositionX implements Comparator<Animal> {
-    public int compare(Animal o1, Animal o2) {
-        return o1.getPosition().x - o2.getPosition().x;
-    }
-}
