@@ -29,13 +29,13 @@ public interface IMap {
     boolean isOccupied(Vector2d position);
 
     /**
-     * Return an object at a given position.
+     * Return a string representation of the tile on this position
      *
      * @param position
-     *            The position of the object.
-     * @return Object or null if the position is not occupied.
+     *            We want the string representation of this position.
+     * @return String representation of this position
      */
-    Object objectAt(Vector2d position);
+    String positionRepresentation(Vector2d position);
 
     /**
      * Spawn n grass patches on the map.
