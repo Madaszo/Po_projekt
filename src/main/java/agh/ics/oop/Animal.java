@@ -27,7 +27,7 @@ public class Animal implements IMapElement{
         this.age = 0;
         this.energy = energy;
     }
-
+    public int getEnergy(){return energy;}
     public String toString() {
         return direction.toString();
     }

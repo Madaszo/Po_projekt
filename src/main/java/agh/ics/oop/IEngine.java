@@ -1,7 +1,5 @@
 package agh.ics.oop;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public interface IEngine {
     void run();

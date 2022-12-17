@@ -8,6 +8,7 @@ package agh.ics.oop;
  *
  */
 public interface IMap {
+
     /**
      * Place an object on the map.
      *
@@ -44,5 +45,6 @@ public interface IMap {
      */
     void spawnGrass(int n);
     Vector2d move(Animal animal);
+    void removeAnimal(Animal animal);
 
 }
