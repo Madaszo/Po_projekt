@@ -45,4 +45,5 @@ public interface IMap {
     void spawnGrass(int n);
     Vector2d move(Animal animal);
 
+	void nextGene(Animal animal);
 }
