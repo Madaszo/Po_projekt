@@ -11,20 +11,18 @@ public class GlobeConstraint extends AbstractRuleMoveConstraints {
 	}
 
 	@Override
-	public void animalMoved(Animal animal, Vector2d position) {
-
-	}
-
-	@Override
 	public Vector2d constraints(Animal animal) {
-		Vector2d potencial = animal.getPosition().add(new Vector2d(0,0).directionsToVector(animal.getDirection()));
-		if(potencial.y < 0 || potencial.y > height){
+		Vector2d potential = animal.getPosition().add(animal.getDirection().directionsToVector());
+		if(potential.y < 0 || potential.y > height){
 			animal.reverseDirection();
 			return animal.getPosition();
 		}
 		else{
-			return new Vector2d(potencial.x%width,potencial.y);
+			int tmp = potential.x;
+			while (tmp < 0) {
+				tmp += width;
+			}
+			return new Vector2d(tmp%width, potential.y);
 		}
 	}
-
 }
