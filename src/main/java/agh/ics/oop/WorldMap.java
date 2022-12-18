@@ -12,8 +12,9 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
 	final int width;
 	final int height;
+	int freeTiles;
 
-	// map rules (we ask them what to do in certain situations
+	// map rules (we ask them what to do in certain situations)
 	IRuleSpawnGrass grassSpawner;
 	IRuleMutations mutator;
 	IRuleGenomeExecution genomeExecutioner;
@@ -26,6 +27,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 					IRuleMoveConstraints moveConstrainer) {
 		this.width = width;
 		this.height = height;
+		this.freeTiles = width * height;
 		this.grassSpawner = grassSpawner;
 		this.mutator = mutator;
 		this.genomeExecutioner = genomeExecutioner;
@@ -41,30 +43,60 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	}
 
 
-	public void place(IMapElement mapOb) {
+	public void place(IMapElement mapOb) throws IllegalArgumentException {
 		if (mapOb.getClass() == Animal.class) {
-			animals.get(mapOb.getPosition()).add((Animal) mapOb);
-			((Animal) mapOb).addObserver(this);
-			return;
+			try {
+				ArrayList<Animal> array = animals.get(mapOb.getPosition());
+				if (array.isEmpty()) {
+					freeTiles--;
+				}
+				array.add((Animal) mapOb);
+				((Animal) mapOb).addObserver(this);
+				return;
+			} catch(IllegalArgumentException e) {
+				throw new IllegalArgumentException("The animal couldn't have been added, because of an unknown error");
+			}
 		}
 
 		if (mapOb.getClass() == Grass.class) {
 			if (!isOccupiedByGrass(mapOb.getPosition())) {
+				freeTiles--;
 				grasses.put(mapOb.getPosition(), (Grass) mapOb);
 				return;
 			} else {
-				throw new RuntimeException("The Grass object couldn't have been added, because there already is a grass object on position: " + mapOb);
+				throw new IllegalArgumentException("The Grass object couldn't have been added, because there already is a grass object on position: " + mapOb);
 			}
 		}
-		throw new RuntimeException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know how to place it");
+		throw new IllegalArgumentException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know how to place it");
 	}
 
-	/**
-	 * An Animal has changed position, so it notifies this map
-	 * @param movedAnimal The animal that changed position
-	 * @param oldPosition The position the animal left
-	 * @param newPosition The position the animal moved to
-	 */
+	@Override
+	public void remove(IMapElement mapOb) throws IllegalArgumentException {
+		if (mapOb.getClass() == Animal.class) {
+			try {
+				ArrayList<Animal> array = animals.get(mapOb.getPosition());
+				if (array.size() == 1) {
+					freeTiles++;
+				}
+				array.remove((Animal) mapOb);
+				return;
+			} catch(Exception e) {
+				throw new IllegalArgumentException("Animal " + mapOb + "couldn't have been removed from the map, because it's not assigned to this map");
+			}
+		}
+
+		if (mapOb.getClass() == Grass.class) {
+			try {
+				freeTiles--;
+				grasses.remove(mapOb.getPosition(), (Grass) mapOb);
+				return;
+			} catch (Exception e) {
+				throw new IllegalArgumentException("The Grass object " + mapOb + " couldn't have been removed, because it's not assigned to this map");
+			}
+		}
+		throw new IllegalArgumentException("Object " + mapOb + "is not of instance Animal or Grass, so map cannot delete it");
+	}
+
 	public void positionChanged(Animal movedAnimal, Vector2d oldPosition, Vector2d newPosition) {
 		animals.get(oldPosition).remove(movedAnimal);
 		animals.get(newPosition).add(movedAnimal);
@@ -97,6 +129,16 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 	public void nextGene(Animal animal) {
 		genomeExecutioner.nextGene(animal);
+	}
+
+	@Override
+	public int getGrassesNum() {
+		return grasses.size();
+	}
+
+	@Override
+	public int getFreeTilesNum() {
+		return freeTiles;
 	}
 
 	@Override
