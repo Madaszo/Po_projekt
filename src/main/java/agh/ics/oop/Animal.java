@@ -4,17 +4,16 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Animal implements IMapElement{
-    // with default values
-    private MapDirection direction = MapDirection.NORTH;
-    private int age = 0;
-    public int currentGene = 0;
-    ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
-
-    // without default values
-    final private int[] genome;
     private final IMap map;
-    private int energy;
     private Vector2d position;
+    private MapDirection direction = MapDirection.NORTH;
+    final private int[] genome;
+    public int currentGene = 0;
+    private int energy;
+    private int age = 0;
+    private int eatenGrass = 0;
+    private int OffspringNum = 0;
+    ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal(IMap map, Vector2d initialPosition, int energy, int[] genome){
         this.map = map;
@@ -52,6 +51,10 @@ public class Animal implements IMapElement{
     public int getGenomeLength() {
         return genome.length;
     }
+
+    public int[] getGenome() { return genome; }
+
+    public int getAge(){ return this.age; }
 
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
