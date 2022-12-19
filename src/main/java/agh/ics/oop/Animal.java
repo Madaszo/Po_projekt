@@ -1,32 +1,26 @@
 package agh.ics.oop;
 
-import agh.ics.oop.rules.IRuleGenomeExecution;
-
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Animal implements IMapElement{
     private final IMap map;
-    private MapDirection direction;
-    private int age;
-    private int energy;
     private Vector2d position;
-    private IRuleGenomeExecution IRGE;
-
-    // just an example, we haven't discussed in what form we want genomes to be
+    private MapDirection direction = MapDirection.NORTH;
+    final private int[] genome;
     public int currentGene = 0;
-    int[] genome = {0, 1, 2, 3};
-    //
-
+    private int energy;
+    private int age = 0;
+    private int eatenGrass = 0;
+    private int OffspringNum = 0;
     ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
-    public Animal(IMap map, Vector2d initialPosition,IRuleGenomeExecution IRGE, int energy){
+
+    public Animal(IMap map, Vector2d initialPosition, int energy, int[] genome){
         this.map = map;
         this.position = initialPosition;
-        this.direction = MapDirection.NORTH;
         this.map.place(this);
-        this.IRGE = IRGE;
-        this.age = 0;
         this.energy = energy;
+        this.genome = genome;
     }
     public int getEnergy(){return energy;}
     public String toString() {
@@ -53,20 +47,32 @@ public class Animal implements IMapElement{
     public MapDirection getDirection(){
         return this.direction;
     }
+
+    public int getGenomeLength() {
+        return genome.length;
+    }
+
+    public int[] getGenome() { return genome; }
+
+    public int getAge(){ return this.age; }
+
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
     }
     public void move() throws FileNotFoundException {
         int d = genome[currentGene];
-        if (d == 0) {
-            Vector2d newPosition = this.map.move(this);
-            positionChanged(this.position, newPosition);
-            this.position = newPosition;
-        } else {
-            this.direction = this.direction.rotate(d);
-            positionChanged(this.position, this.position);
-        }
-        this.IRGE.nextGene(this);
+
+        // rotate according to currently activated gene
+        this.direction = this.direction.rotate(d);
+
+        // move one tile forward according to current orientation
+        Vector2d oldPosition = this.position;
+        this.position = this.map.move(this);
+
+        // select next gene to read
+        this.map.nextGene(this);
+
+        positionChanged(oldPosition, this.position);
     }
     public void reverseDirection(){this.direction = this.direction.rotate(4);}
     public String getLabel(){
@@ -74,7 +80,7 @@ public class Animal implements IMapElement{
     }
     void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         for(IPositionChangeObserver observer : observers){
-            observer.positionChanged(oldPosition,newPosition);
+            observer.positionChanged(this, oldPosition, newPosition);
         }
     }
     void addObserver(IPositionChangeObserver observer){
@@ -83,7 +89,4 @@ public class Animal implements IMapElement{
     void removeObserver(IPositionChangeObserver observer){
         observers.remove(observer);
     }
-
-	// required by IRuleGenomeExecutioner (unless we change the way it interacts with animals)
-
 }

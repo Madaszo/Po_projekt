@@ -13,10 +13,27 @@ public interface IMap {
      * Place an object on the map.
      *
      * @param object
-     *            The animal to place on the map.
+     *            The {@link IMapElement} to place on the map.
      * @throws RuntimeException Throws exception if the object couldn't place correctly
      */
     void place(IMapElement object);
+
+    /**
+     * Remove an object from the map.
+     *
+     * @param object
+     *            The {@link IMapElement} to remove from the map.
+     * @throws RuntimeException Throws exception if the object couldn't place correctly
+     */
+    void remove(IMapElement object) throws Exception;
+
+    /**
+     * An Animal has changed position, so it notifies this map
+     * @param movedAnimal The animal that changed position
+     * @param oldPosition The position the animal left
+     * @param newPosition The position the animal moved to
+     */
+    void positionChanged(Animal movedAnimal, Vector2d oldPosition, Vector2d newPosition);
 
     /**
      * Return true if given position on the map is occupied. Should not be
@@ -47,4 +64,9 @@ public interface IMap {
     Vector2d move(Animal animal);
     void removeAnimal(Animal animal);
 
+	void nextGene(Animal animal);
+
+    int getGrassesNum();
+
+    int getFreeTilesNum();
 }

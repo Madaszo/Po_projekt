@@ -7,30 +7,29 @@ import agh.ics.oop.rules.IRuleSpawnGrass;
 
 import java.util.*;
 
-// todo WorldMap should implement IPositionChangeObserver
-public class WorldMap implements IMap {
-	// a lot of animals can be in one position, so we cannot use any sort of HashMap, because we need to keep
-	// animals in some kind of order
-	// todo Some better way of ordering Animals and their positions?
+public class WorldMap implements IMap, IPositionChangeObserver {
 	public final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
 	final int width;
 	final int height;
-	// map rules (we ask them what to do in certain situations
+	int freeTiles;
+
+	// map rules (we ask them what to do in certain situations)
 	IRuleSpawnGrass grassSpawner;
-	IRuleMutations mutater;
+	IRuleMutations mutator;
 	IRuleGenomeExecution genomeExecutioner;
 	IRuleMoveConstraints moveConstrainer;
 
 	public WorldMap(int width, int height,
 					IRuleSpawnGrass grassSpawner,
-					IRuleMutations mutater,
+					IRuleMutations mutator,
 					IRuleGenomeExecution genomeExecutioner,
 					IRuleMoveConstraints moveConstrainer) {
 		this.width = width;
 		this.height = height;
+		this.freeTiles = width * height;
 		this.grassSpawner = grassSpawner;
-		this.mutater = mutater;
+		this.mutator = mutator;
 		this.genomeExecutioner = genomeExecutioner;
 		this.moveConstrainer = moveConstrainer;
 
@@ -44,35 +43,64 @@ public class WorldMap implements IMap {
 	}
 
 
-	public void place(IMapElement mapOb) {
+	public void place(IMapElement mapOb) throws IllegalArgumentException {
 		if (mapOb.getClass() == Animal.class) {
-			animals.get(mapOb.getPosition()).add((Animal) mapOb);
-			return;
+			try {
+				ArrayList<Animal> array = animals.get(mapOb.getPosition());
+				if (array.isEmpty()) {
+					freeTiles--;
+				}
+				array.add((Animal) mapOb);
+				((Animal) mapOb).addObserver(this);
+				return;
+			} catch(IllegalArgumentException e) {
+				throw new IllegalArgumentException("The animal couldn't have been added, because of an unknown error");
+			}
 		}
 
 		if (mapOb.getClass() == Grass.class) {
 			if (!isOccupiedByGrass(mapOb.getPosition())) {
+				freeTiles--;
 				grasses.put(mapOb.getPosition(), (Grass) mapOb);
 				return;
 			} else {
-				throw new RuntimeException("The Grass object couldn't have been added, because there already is a grass object on position: " + mapOb);
+				throw new IllegalArgumentException("The Grass object couldn't have been added, because there already is a grass object on position: " + mapOb);
 			}
 		}
-		throw new RuntimeException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know how to place it");
+		throw new IllegalArgumentException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know how to place it");
 	}
 
-	/* not necessary right now
-	 * An Animal has changed position, so he notified this map
-	 * @param oldPosition the position the object left
-	 * @param newPosition the position the object moved to
+	@Override
+	public void remove(IMapElement mapOb) throws IllegalArgumentException {
+		if (mapOb.getClass() == Animal.class) {
+			try {
+				ArrayList<Animal> array = animals.get(mapOb.getPosition());
+				if (array.size() == 1) {
+					freeTiles++;
+				}
+				array.remove((Animal) mapOb);
+				return;
+			} catch(Exception e) {
+				throw new IllegalArgumentException("Animal " + mapOb + "couldn't have been removed from the map, because it's not assigned to this map");
+			}
+		}
 
-	public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-		Animal animal = animals.get(oldPosition);
-		animals.remove(oldPosition);
-		animals.put(newPosition, animal);
-		mapBoundary.positionChanged(oldPosition, newPosition);
-		hasMovedTo(newPosition);
-	}*/
+		if (mapOb.getClass() == Grass.class) {
+			try {
+				freeTiles--;
+				grasses.remove(mapOb.getPosition(), (Grass) mapOb);
+				return;
+			} catch (Exception e) {
+				throw new IllegalArgumentException("The Grass object " + mapOb + " couldn't have been removed, because it's not assigned to this map");
+			}
+		}
+		throw new IllegalArgumentException("Object " + mapOb + "is not of instance Animal or Grass, so map cannot delete it");
+	}
+
+	public void positionChanged(Animal movedAnimal, Vector2d oldPosition, Vector2d newPosition) {
+		animals.get(oldPosition).remove(movedAnimal);
+		animals.get(newPosition).add(movedAnimal);
+	}
 
 	public boolean isOccupied(Vector2d position) {
 		return isOccupiedByAnimal(position) || isOccupiedByGrass(position);
@@ -99,6 +127,20 @@ public class WorldMap implements IMap {
 		}
 	}
 
+	public void nextGene(Animal animal) {
+		genomeExecutioner.nextGene(animal);
+	}
+
+	@Override
+	public int getGrassesNum() {
+		return grasses.size();
+	}
+
+	@Override
+	public int getFreeTilesNum() {
+		return freeTiles;
+	}
+
 	@Override
 	public Vector2d move(Animal animal) {
 		return moveConstrainer.constraints(animal);
@@ -114,7 +156,6 @@ public class WorldMap implements IMap {
 	}
 
 	public List<Animal> animalsAt(Vector2d position) {
-		System.out.println(animals.get(position));
 		if (!animals.get(position).isEmpty()) {
 			return Collections.unmodifiableList(animals.get(position));
 		}

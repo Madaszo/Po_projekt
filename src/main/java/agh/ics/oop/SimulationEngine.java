@@ -1,13 +1,12 @@
 package agh.ics.oop;
 
-import com.sun.source.tree.WhileLoopTree;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class SimulationEngine implements IEngine{
     List<Animal> animals = new ArrayList<>();
-    public IMap map;
+    public final IMap map;
+    public final MapStats mapStats;
     public SimulationEngine(IMap map,int animalsNumber){
 
     }
@@ -50,5 +49,7 @@ public class SimulationEngine implements IEngine{
     @Override
     public void procreate() {
 
+        this.map = map;
+        this.mapStats = new MapStats((IEngine) this, this.map);
     }
 }

@@ -6,6 +6,6 @@ public class DeterministicGenomeExecutioner implements IRuleGenomeExecution{
 
 	@Override
 	public void nextGene(Animal animal) {
-		animal.currentGene = (animal.currentGene+1)%8;
+		animal.currentGene = (animal.currentGene+1) % animal.getGenomeLength();
 	}
 }
