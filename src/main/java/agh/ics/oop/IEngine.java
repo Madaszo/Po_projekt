@@ -1,13 +1,12 @@
 package agh.ics.oop;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 public interface IEngine {
-    void run();
-    void killAnimals();
+    void run(int i) throws Exception;
+    void killAnimals() throws Exception;
     void moveAnimals();
     void grassify();
-    void eat();
+    void eat() throws Exception;
     void procreate();
 }

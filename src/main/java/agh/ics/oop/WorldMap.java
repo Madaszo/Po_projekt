@@ -8,11 +8,13 @@ import agh.ics.oop.rules.IRuleSpawnGrass;
 import java.util.*;
 
 public class WorldMap implements IMap, IPositionChangeObserver {
-	public final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
+	public Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
 	final int width;
 	final int height;
 	int freeTiles;
+	int energyGain = 1;
+	int grassGain = 1;
 
 	// map rules (we ask them what to do in certain situations)
 	IRuleSpawnGrass grassSpawner;
@@ -41,7 +43,28 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 		}
 	}
+	public int mutate(){return mutator.mutate();}
+	@Override
+	public int getGrassGain() {
+		return grassGain;
+	}
 
+
+
+	public int getHeight(){return height;}
+	public int getWidth(){return width;}
+
+	public int getEnergyGain() {return energyGain;}
+
+	@Override
+	public Grass getGrass(Vector2d position) {
+		return grasses.get(position);
+	}
+
+	@Override
+	public Map<Vector2d, ArrayList<Animal>> getAnimals() {
+		return animals;
+	}
 
 	public void place(IMapElement mapOb) throws IllegalArgumentException {
 		if (mapOb.getClass() == Animal.class) {
@@ -99,6 +122,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 	public void positionChanged(Animal movedAnimal, Vector2d oldPosition, Vector2d newPosition) {
 		animals.get(oldPosition).remove(movedAnimal);
+		System.out.println(newPosition);
 		animals.get(newPosition).add(movedAnimal);
 	}
 
@@ -122,9 +146,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 	@Override
 	public void spawnGrass(int n) {
-		for (Vector2d position : grassSpawner.findTilesToSpawnGrass(n)) {
-			this.place(new Grass(position));
-		}
+		grassSpawner.findTilesToSpawnGrass(n,this);
 	}
 
 	public void nextGene(Animal animal) {
@@ -150,9 +172,9 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 		return animalsAt(position) != null;
 	}
 
-	public List<Animal> animalsAt(Vector2d position) {
+	public ArrayList<Animal> animalsAt(Vector2d position) {
 		if (!animals.get(position).isEmpty()) {
-			return Collections.unmodifiableList(animals.get(position));
+			return (animals.get(position));
 		}
 		return null;
 	}
