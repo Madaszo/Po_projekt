@@ -14,6 +14,7 @@ public class Main {
 			map.spawnGrass(10);
 			Animal dog = new Animal(map, new Vector2d(0, 1), 20, new int[]{2, 1, 3, 7});
 			Animal pig = new Animal(map, new Vector2d(1, 0), 30, new int[]{0, 0, 4, 2});
+			map.randomAnimals(10);
 			System.out.println(map.animals);
 			SimulationEngine SE = new SimulationEngine(map);
 			SE.run(31);

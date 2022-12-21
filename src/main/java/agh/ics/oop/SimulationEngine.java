@@ -56,6 +56,7 @@ public class SimulationEngine implements IEngine{
     public void moveAnimals() {
         for(Animal animal: animals){
             animal.move();
+            System.out.println(animal.getEnergy());
         }
     }
 

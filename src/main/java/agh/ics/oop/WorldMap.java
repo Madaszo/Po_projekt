@@ -13,8 +13,10 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	final int width;
 	final int height;
 	int freeTiles;
-	int energyGain = 1;
+	int energyGain = 10;
 	int grassGain = 1;
+	int genomeLength = 8;
+	int startingEnergy = 10;
 
 	// map rules (we ask them what to do in certain situations)
 	IRuleSpawnGrass grassSpawner;
@@ -91,6 +93,21 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 			}
 		}
 		throw new IllegalArgumentException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know how to place it");
+	}
+
+	@Override
+	public void randomAnimals(int n) {
+		Random random = new Random();
+		int[] genome = new int[genomeLength];
+		for(int i = 0; i < n; i++){
+			for (int j = 0; j < genomeLength; j++){
+				genome[j] = random.nextInt(8);
+			}
+			Animal animal = new Animal(this,
+										new Vector2d(random.nextInt(width),
+										random.nextInt(height)),
+										startingEnergy,genome);
+		}
 	}
 
 	@Override
