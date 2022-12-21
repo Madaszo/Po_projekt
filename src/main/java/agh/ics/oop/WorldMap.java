@@ -13,8 +13,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	final int width;
 	final int height;
 	int freeTiles;
-	int genomeLength = 8;
-	int startingEnergy = 10;
+	final int genomeLength;
+	final int startingEnergy;
 	final int energyGain;
 	final int grassGain;
 
@@ -24,7 +24,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	IRuleGenomeExecution genomeExecutioner;
 	IRuleMoveConstraints moveConstrainer;
 
-	public WorldMap(int width, int height, int grassGain, int energyGain,
+	public WorldMap(int width, int height, int grassGain, int energyGain, int genomeLength, int startingEnergy,
 					IRuleSpawnGrass grassSpawner,
 					IRuleMutations mutator,
 					IRuleGenomeExecution genomeExecutioner,
@@ -34,6 +34,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 		this.freeTiles = width * height;
 		this.grassGain = grassGain;
 		this.energyGain = energyGain;
+		this.genomeLength = genomeLength;
+		this.startingEnergy = startingEnergy;
 
 		// map rules
 		this.grassSpawner = grassSpawner;
@@ -49,6 +51,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 		}
 	}
+	public int getGenomeLength(){return genomeLength;}
 	public int mutate(){return mutator.mutate();}
 	@Override
 	public int getGrassGain() {

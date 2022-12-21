@@ -37,6 +37,7 @@ public interface IMap {
      * @param newPosition The position the animal moved to
      */
     void positionChanged(Animal movedAnimal, Vector2d oldPosition, Vector2d newPosition);
+    int getGenomeLength();
     void randomAnimals(int n);
     /**
      * Return true if given position on the map is occupied. Should not be

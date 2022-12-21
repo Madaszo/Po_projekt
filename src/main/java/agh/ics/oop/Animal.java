@@ -8,9 +8,10 @@ import java.util.Random;
 public class Animal implements IMapElement{
     private final IMap map;
     private Vector2d position;
-    private MapDirection direction = MapDirection.NORTH;
+    private final Random random = new Random();
+    private MapDirection direction = MapDirection.fromInt(random.nextInt(8));
     final private int[] genome;
-    public int currentGene = 0;
+    public int currentGene;
     private int energy;
     private int age = 0;
     private int eatenGrass = 0;
@@ -23,6 +24,7 @@ public class Animal implements IMapElement{
         this.map.place(this);
         this.energy = energy;
         this.genome = genome;
+        this.currentGene = random.nextInt(map.getGenomeLength());
     }
     public int getEnergy(){return energy;}
     public String toString() {
@@ -65,9 +67,7 @@ public class Animal implements IMapElement{
                                 this.createGenome(sodoma.get(1)));
                 this.energy/=2;
                 sodoma.get(1).energy/=2;
-                Random random = new Random();
                 baby.direction = MapDirection.fromInt(random.nextInt(8));
-                baby.currentGene = random.nextInt(baby.genome.length);
                 OffspringNum++;
                 return baby;
 
