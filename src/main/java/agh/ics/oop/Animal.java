@@ -109,6 +109,7 @@ public class Animal implements IMapElement{
         if (map.isOccupiedByGrass(this.getPosition())){
             map.remove(map.getGrass(this.getPosition()));
             energy += map.getEnergyGain();
+            this.eatenGrass++;
         }
     }
     public void move() {
