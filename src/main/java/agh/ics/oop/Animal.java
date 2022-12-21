@@ -102,6 +102,8 @@ public class Animal implements IMapElement{
 
     public int getAge(){ return this.age; }
 
+    public int getEatenGrass() { return this.eatenGrass; }
+
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
     }
