@@ -6,7 +6,7 @@ import agh.ics.oop.rules.*;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			WorldMap map = new WorldMap(10, 10,
+			WorldMap map = new WorldMap(10, 10, 3, 3,
 					new GreenEquator(),
 					new FullRandomMutationer(),
 					new DeterministicGenomeExecutioner(),

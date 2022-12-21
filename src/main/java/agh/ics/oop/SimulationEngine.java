@@ -47,6 +47,7 @@ public class SimulationEngine implements IEngine{
             }
         }
         for (Animal animal: dead){
+            mapStats.animalAboutToDie(animal);
             map.remove(animal);
             animals.remove(animal);
         }
@@ -79,6 +80,7 @@ public class SimulationEngine implements IEngine{
             Animal baby = animal.procreate();
             if(baby != null){
                 babies.add(baby);
+                mapStats.animalBorn(baby);
             }
         }
         animals.addAll(babies);

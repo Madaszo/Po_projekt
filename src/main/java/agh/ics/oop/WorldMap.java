@@ -13,8 +13,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	final int width;
 	final int height;
 	int freeTiles;
-	int energyGain = 1;
-	int grassGain = 1;
+	final int energyGain;
+	final int grassGain;
 
 	// map rules (we ask them what to do in certain situations)
 	IRuleSpawnGrass grassSpawner;
@@ -22,7 +22,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	IRuleGenomeExecution genomeExecutioner;
 	IRuleMoveConstraints moveConstrainer;
 
-	public WorldMap(int width, int height,
+	public WorldMap(int width, int height, int grassGain, int energyGain,
 					IRuleSpawnGrass grassSpawner,
 					IRuleMutations mutator,
 					IRuleGenomeExecution genomeExecutioner,
@@ -30,6 +30,10 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 		this.width = width;
 		this.height = height;
 		this.freeTiles = width * height;
+		this.grassGain = grassGain;
+		this.energyGain = energyGain;
+
+		// map rules
 		this.grassSpawner = grassSpawner;
 		this.mutator = mutator;
 		this.genomeExecutioner = genomeExecutioner;
