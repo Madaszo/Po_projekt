@@ -15,8 +15,8 @@ public class SimulationEngine implements IEngine{
             ArrayList<Animal> mAnimals = entry.getValue();
             if(!mAnimals.isEmpty()) {
                 for (Animal animal : mAnimals) {
-                    System.out.println(animal);
                     animals.add(animal);
+                    mapStats.animalBorn(animal);
                 }
             }
         }
@@ -56,7 +56,10 @@ public class SimulationEngine implements IEngine{
     @Override
     public void moveAnimals() {
         for(Animal animal: animals){
+
+            System.out.println("done");
             animal.move();
+            System.out.println(animal.getEnergy());
         }
     }
 

@@ -13,6 +13,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	final int width;
 	final int height;
 	int freeTiles;
+	final int genomeLength;
+	final int startingEnergy;
 	final int energyGain;
 	final int grassGain;
 
@@ -22,7 +24,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	IRuleGenomeExecution genomeExecutioner;
 	IRuleMoveConstraints moveConstrainer;
 
-	public WorldMap(int width, int height, int grassGain, int energyGain,
+	public WorldMap(int width, int height, int grassGain, int energyGain, int genomeLength, int startingEnergy,
 					IRuleSpawnGrass grassSpawner,
 					IRuleMutations mutator,
 					IRuleGenomeExecution genomeExecutioner,
@@ -32,6 +34,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 		this.freeTiles = width * height;
 		this.grassGain = grassGain;
 		this.energyGain = energyGain;
+		this.genomeLength = genomeLength;
+		this.startingEnergy = startingEnergy;
 
 		// map rules
 		this.grassSpawner = grassSpawner;
@@ -47,6 +51,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 		}
 	}
+	public int getGenomeLength(){return genomeLength;}
 	public int mutate(){return mutator.mutate();}
 	@Override
 	public int getGrassGain() {
@@ -95,6 +100,21 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 			}
 		}
 		throw new IllegalArgumentException("Object " + mapOb + "is not of instance Animal or Grass, so map doesn't know how to place it");
+	}
+
+	@Override
+	public void randomAnimals(int n) {
+		Random random = new Random();
+		int[] genome = new int[genomeLength];
+		for(int i = 0; i < n; i++){
+			for (int j = 0; j < genomeLength; j++){
+				genome[j] = random.nextInt(8);
+			}
+			Animal animal = new Animal(this,
+										new Vector2d(random.nextInt(width),
+										random.nextInt(height)),
+										startingEnergy,genome);
+		}
 	}
 
 	@Override
