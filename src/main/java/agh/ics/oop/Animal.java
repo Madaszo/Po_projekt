@@ -15,7 +15,7 @@ public class Animal implements IMapElement{
     private int energy;
     private int age = 0;
     private int eatenGrass = 0;
-    public int OffspringNum = 0;
+    public int offspringNum = 0;
     ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal(IMap map, Vector2d initialPosition, int energy, int[] genome){
@@ -56,7 +56,7 @@ public class Animal implements IMapElement{
     public Animal procreate(){
         if(map.animalsAt(this.getPosition()).size()>1){
             ArrayList<Animal> sodoma = map.animalsAt(this.getPosition());
-            sodoma.sort(Comparator.comparing(Animal::getEnergy));
+            sodoma.sort(new AnimalComparator());
             Collections.reverse(sodoma);
             if(this.energy > 10 && sodoma.get(1).energy>10){
                 Animal baby =
@@ -68,7 +68,7 @@ public class Animal implements IMapElement{
                 this.energy/=2;
                 sodoma.get(1).energy/=2;
                 baby.direction = MapDirection.fromInt(random.nextInt(8));
-                OffspringNum++;
+                offspringNum++;
                 return baby;
 
             }
@@ -144,4 +144,16 @@ public class Animal implements IMapElement{
     void removeObserver(IPositionChangeObserver observer){
         observers.remove(observer);
     }
+}
+
+class AnimalComparator implements Comparator<Animal> {
+
+    @Override
+    public int compare(Animal a, Animal b) {
+        if (a.getEnergy() != b.getEnergy()) {return b.getEnergy() - a.getEnergy();}
+        if (a.getAge() != b.getAge()) {return b.getAge() - a.getAge();}
+        if (a.offspringNum != b.offspringNum) {return b.offspringNum - a.offspringNum;}
+        return -1;
+    }
+
 }
