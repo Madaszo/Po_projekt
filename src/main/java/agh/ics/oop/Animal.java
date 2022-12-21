@@ -1,7 +1,6 @@
 package agh.ics.oop;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -57,7 +56,6 @@ public class Animal implements IMapElement{
         if(map.animalsAt(this.getPosition()).size()>1){
             ArrayList<Animal> sodoma = map.animalsAt(this.getPosition());
             sodoma.sort(new AnimalComparator());
-            Collections.reverse(sodoma);
             if(this.energy > 10 && sodoma.get(1).energy>10){
                 Animal baby =
                         new Animal(
