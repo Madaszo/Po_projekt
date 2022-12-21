@@ -13,14 +13,14 @@ public class GlobeConstraint extends AbstractRuleMoveConstraints {
 	@Override
 	public Vector2d constraints(Animal animal) {
 		Vector2d potential = animal.getPosition().add(animal.getDirection().directionsToVector());
-		if(potential.y < 0 || potential.y > height){
+		if(potential.y < 0 || potential.y >= height){
 			animal.reverseDirection();
 			return animal.getPosition();
 		}
 		else{
 			int tmp = potential.x;
-			while (tmp < 0) {
-				tmp += width;
+			if(tmp<0){
+				tmp = width + tmp;
 			}
 			return new Vector2d(tmp%width, potential.y);
 		}

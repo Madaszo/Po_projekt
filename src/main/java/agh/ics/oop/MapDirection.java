@@ -23,6 +23,19 @@ public enum MapDirection {
             case EAST -> "E ";
         };
     }
+    public static MapDirection fromInt(int d){
+        return switch (d){
+            case 0 -> NORTH;
+            case 1 -> NORTHEAST;
+            case 2 -> EAST;
+            case 3 -> SOUTHEAST;
+            case 4 -> SOUTH;
+            case 5 -> SOUTHWEST;
+            case 6 -> WEST;
+            case 7 -> NORTHWEST;
+            default -> NORTH;
+        };
+    }
     public MapDirection rotate(int gene){
         MapDirection n = this;
         for(int i = 0; i < gene; i++){

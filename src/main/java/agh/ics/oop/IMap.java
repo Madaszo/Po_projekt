@@ -1,5 +1,8 @@
 package agh.ics.oop;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 /**
  * The interface responsible for interacting with the map of the world.
  * Assumes that Vector2d and MoveDirection classes are defined.
@@ -45,14 +48,20 @@ public interface IMap {
      * @return True if the position is occupied.
      */
     boolean isOccupied(Vector2d position);
-
+    Map<Vector2d, ArrayList<Animal>> getAnimals();
+    int getGrassGain();
+    int mutate();
+    ArrayList<Animal> animalsAt(Vector2d position);
     /**
      * Return a string representation of the tile on this position
      *
-     * @param position
-     *            We want the string representation of this position.
      * @return String representation of this position
      */
+    int getHeight();
+    int getWidth();
+    boolean isOccupiedByGrass(Vector2d position);
+    Grass getGrass(Vector2d position);
+    int getEnergyGain();
     String positionRepresentation(Vector2d position);
 
     /**
@@ -62,9 +71,8 @@ public interface IMap {
      */
     void spawnGrass(int n);
     Vector2d move(Animal animal);
-    void removeAnimal(Animal animal);
 
-	void nextGene(Animal animal);
+    void nextGene(Animal animal);
 
     int getGrassesNum();
 

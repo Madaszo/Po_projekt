@@ -1,7 +1,6 @@
 package agh.ics.oop.rules;
 
-import agh.ics.oop.Vector2d;
-
+import agh.ics.oop.IMap;
 public interface IRuleSpawnGrass {
-	Vector2d[] findTilesToSpawnGrass(int n);
+	void findTilesToSpawnGrass(int n, IMap map);
 }
