@@ -1,7 +1,6 @@
 package agh.ics.oop;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -16,7 +15,7 @@ public class Animal implements IMapElement{
     private int age = 0;
     private final int fedAnimal;
     private int eatenGrass = 0;
-    public int OffspringNum = 0;
+    public int offspringNum = 0;
     private final int neededEnergy;
     ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
 
@@ -60,9 +59,8 @@ public class Animal implements IMapElement{
     public Animal procreate(){
         if(map.animalsAt(this.getPosition()).size()>1){
             ArrayList<Animal> sodoma = map.animalsAt(this.getPosition());
-            sodoma.sort(Comparator.comparing(Animal::getEnergy));
-            Collections.reverse(sodoma);
-            if(this.energy > fedAnimal && sodoma.get(1).energy>10){
+            sodoma.sort(new AnimalComparator());
+            if(this.energy > fedAnimal && sodoma.get(1).energy>fedAnimal){
                 Animal baby =
                         new Animal(
                                 map,
@@ -72,7 +70,7 @@ public class Animal implements IMapElement{
                 this.energy/=2;
                 sodoma.get(1).energy/=2;
                 baby.direction = MapDirection.fromInt(random.nextInt(8));
-                OffspringNum++;
+                offspringNum++;
                 return baby;
 
             }
@@ -150,4 +148,16 @@ public class Animal implements IMapElement{
     void removeObserver(IPositionChangeObserver observer){
         observers.remove(observer);
     }
+}
+
+class AnimalComparator implements Comparator<Animal> {
+
+    @Override
+    public int compare(Animal a, Animal b) {
+        if (a.getEnergy() != b.getEnergy()) {return b.getEnergy() - a.getEnergy();}
+        if (a.getAge() != b.getAge()) {return b.getAge() - a.getAge();}
+        if (a.offspringNum != b.offspringNum) {return b.offspringNum - a.offspringNum;}
+        return -1;
+    }
+
 }

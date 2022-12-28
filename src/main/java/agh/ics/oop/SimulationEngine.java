@@ -24,12 +24,11 @@ public class SimulationEngine implements IEngine, Runnable{
     @Override
     public void run(int i) throws Exception {
         for(int j = 0; j < i; j++){
-            animals.sort(Comparator.comparing(Animal::getEnergy));
-            Collections.reverse(animals);
+            animals.sort(new AnimalComparator());
             killAnimals();
             moveAnimals();
-            System.out.println(animals);
-            System.out.println(j);
+            //System.out.println(animals);
+            //System.out.println(j);
             eat();
             procreate();
             grassify();
