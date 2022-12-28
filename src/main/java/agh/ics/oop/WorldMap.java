@@ -11,12 +11,15 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	public Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
 	final int width;
+	private final int fedAnimal;
 	final int height;
 	int freeTiles;
 	final int genomeLength;
 	final int startingEnergy;
 	final int energyGain;
 	final int grassGain;
+	final int startingGrass;
+	final int neededEnergy;
 
 	// map rules (we ask them what to do in certain situations)
 	IRuleSpawnGrass grassSpawner;
@@ -24,7 +27,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	IRuleGenomeExecution genomeExecutioner;
 	IRuleMoveConstraints moveConstrainer;
 
-	public WorldMap(int width, int height, int grassGain, int energyGain, int genomeLength, int startingEnergy,
+	public WorldMap(int width, int height,int startingGrass, int grassGain, int energyGain, int genomeLength,
+					int startingEnergy,int fedAnimal, int neededEnergy, int minimalMutation, int maximumMutation,
 					IRuleSpawnGrass grassSpawner,
 					IRuleMutations mutator,
 					IRuleGenomeExecution genomeExecutioner,
@@ -36,7 +40,9 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 		this.energyGain = energyGain;
 		this.genomeLength = genomeLength;
 		this.startingEnergy = startingEnergy;
-
+		this.startingGrass = startingGrass;
+		this.fedAnimal = fedAnimal;
+		this.neededEnergy = neededEnergy;
 		// map rules
 		this.grassSpawner = grassSpawner;
 		this.mutator = mutator;
@@ -50,6 +56,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 			}
 
 		}
+		this.spawnGrass(startingGrass);
 	}
 	public int getGenomeLength(){return genomeLength;}
 	public int mutate(){return mutator.mutate();}
@@ -113,7 +120,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 			Animal animal = new Animal(this,
 										new Vector2d(random.nextInt(width),
 										random.nextInt(height)),
-										startingEnergy,genome);
+										startingEnergy,genome,fedAnimal,neededEnergy);
 		}
 	}
 
