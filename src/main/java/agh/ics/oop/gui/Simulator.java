@@ -14,13 +14,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
 
 public class Simulator implements EngineObserver, Runnable {
     JSONObject config;
@@ -31,15 +26,6 @@ public class Simulator implements EngineObserver, Runnable {
     Simulator(JSONObject conf, Stage stage){
         this.stage = stage;
         this.config = conf;
-    }
-
-    public static JSONObject conf(String s) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        System.out.println(s);
-        FileReader fileReader = new FileReader("src/main/resources/conf"+s+".json");
-        JSONObject o = (JSONObject) parser.parse(fileReader);
-        System.out.println(o);
-        return o;
     }
 
     public void updateScene(SimulationEngine SE) {
@@ -60,7 +46,7 @@ public class Simulator implements EngineObserver, Runnable {
                 gridPane.add(label1,0,ur.y-i+1,1,1);
             }
             for(Animal animal: SE.animals){
-                GuiElementBox gub = null;
+                GuiElementBox gub;
                 Vector2d position = animal.getPosition();
                 try {
                     gub = new GuiElementBox(animal);
