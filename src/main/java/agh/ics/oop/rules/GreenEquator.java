@@ -1,9 +1,10 @@
 package agh.ics.oop.rules;
-import java.util.Random;
 
 import agh.ics.oop.Grass;
 import agh.ics.oop.IMap;
 import agh.ics.oop.Vector2d;
+
+import java.util.Random;
 
 public class GreenEquator implements IRuleSpawnGrass{
 	@Override
