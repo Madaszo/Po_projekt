@@ -2,14 +2,14 @@ package agh.ics.oop;
 
 import java.util.*;
 
-public class SimulationEngine implements IEngine{
-    List<Animal> animals = new ArrayList<>();
+public class SimulationEngine implements IEngine, Runnable{
+    public List<Animal> animals = new ArrayList<>();
     public final IMap map;
     public final MapStats mapStats;
-    public SimulationEngine(IMap map){
-        System.out.println(map.getAnimals());
+    EngineObserver observer;
+    public SimulationEngine(IMap map,EngineObserver observer){
         this.map = map;
-
+        this.observer = observer;
         this.mapStats = new MapStats(this, this.map);
         for(Map.Entry<Vector2d,ArrayList<Animal>> entry: this.map.getAnimals().entrySet()){
             ArrayList<Animal> mAnimals = entry.getValue();
@@ -21,7 +21,6 @@ public class SimulationEngine implements IEngine{
             }
         }
     }
-
     @Override
     public void run(int i) throws Exception {
         for(int j = 0; j < i; j++){
@@ -34,6 +33,7 @@ public class SimulationEngine implements IEngine{
             procreate();
             grassify();
             System.out.println(map);
+            observer.updateScene(this);
         }
     }
 
@@ -56,7 +56,6 @@ public class SimulationEngine implements IEngine{
     public void moveAnimals() {
         for(Animal animal: animals){
 
-            System.out.println("done");
             animal.move();
             System.out.println(animal.getEnergy());
         }
@@ -86,5 +85,28 @@ public class SimulationEngine implements IEngine{
             }
         }
         animals.addAll(babies);
+    }
+
+    @Override
+    public void run() {
+        while (true){
+            animals.sort(Comparator.comparing(Animal::getEnergy));
+            Collections.reverse(animals);
+            try {
+                killAnimals();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            moveAnimals();
+            try {
+                eat();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            procreate();
+            grassify();
+            System.out.println(map);
+            observer.updateScene(this);
+        }
     }
 }

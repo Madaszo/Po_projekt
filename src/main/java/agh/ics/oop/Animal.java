@@ -13,17 +13,21 @@ public class Animal implements IMapElement{
     public int currentGene;
     private int energy;
     private int age = 0;
+    private final int fedAnimal;
     private int eatenGrass = 0;
     public int offspringNum = 0;
+    private final int neededEnergy;
     ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
 
-    public Animal(IMap map, Vector2d initialPosition, int energy, int[] genome){
+    public Animal(IMap map, Vector2d initialPosition, int energy, int[] genome, int fedAnimal,int neededEnergy){
         this.map = map;
         this.position = initialPosition;
         this.map.place(this);
         this.energy = energy;
         this.genome = genome;
         this.currentGene = random.nextInt(map.getGenomeLength());
+        this.fedAnimal = fedAnimal;
+        this.neededEnergy = neededEnergy;
     }
     public int getEnergy(){return energy;}
     public String toString() {
@@ -56,13 +60,13 @@ public class Animal implements IMapElement{
         if(map.animalsAt(this.getPosition()).size()>1){
             ArrayList<Animal> sodoma = map.animalsAt(this.getPosition());
             sodoma.sort(new AnimalComparator());
-            if(this.energy > 10 && sodoma.get(1).energy>10){
+            if(this.energy > fedAnimal && sodoma.get(1).energy>fedAnimal){
                 Animal baby =
                         new Animal(
                                 map,
                                 this.position,
                                 this.energy/2+sodoma.get(1).energy/2,
-                                this.createGenome(sodoma.get(1)));
+                                this.createGenome(sodoma.get(1)), fedAnimal,neededEnergy);
                 this.energy/=2;
                 sodoma.get(1).energy/=2;
                 baby.direction = MapDirection.fromInt(random.nextInt(8));
@@ -99,6 +103,8 @@ public class Animal implements IMapElement{
     public int[] getGenome() { return genome; }
 
     public int getAge(){ return this.age; }
+
+    public int getEatenGrass() { return this.eatenGrass; }
 
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
