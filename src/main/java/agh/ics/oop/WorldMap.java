@@ -10,9 +10,9 @@ import java.util.*;
 public class WorldMap implements IMap, IPositionChangeObserver {
 	public Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
-	final int width;
+	private final int width;
+	private final int height;
 	private final int fedAnimal;
-	final int height;
 	int freeTiles;
 	final int genomeLength;
 	final int startingEnergy;
@@ -85,11 +85,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	public void place(IMapElement mapOb) throws IllegalArgumentException {
 		if (mapOb.getClass() == Animal.class) {
 			try {
-				ArrayList<Animal> array = animals.get(mapOb.getPosition());
-				if (array.isEmpty()) {
-					freeTiles--;
-				}
-				array.add((Animal) mapOb);
+				if (!this.isOccupied(mapOb.getPosition())) { freeTiles--; }
+				animals.get(mapOb.getPosition()).add((Animal) mapOb);
 				((Animal) mapOb).addObserver(this);
 				return;
 			} catch(IllegalArgumentException e) {
@@ -99,7 +96,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 		if (mapOb.getClass() == Grass.class) {
 			if (!isOccupiedByGrass(mapOb.getPosition())) {
-				freeTiles--;
+				if (!this.isOccupied(mapOb.getPosition())) { freeTiles--; }
 				grasses.put(mapOb.getPosition(), (Grass) mapOb);
 				return;
 			} else {
@@ -117,10 +114,9 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 			for (int j = 0; j < genomeLength; j++){
 				genome[j] = random.nextInt(8);
 			}
-			Animal animal = new Animal(this,
-										new Vector2d(random.nextInt(width),
-										random.nextInt(height)),
-										startingEnergy,genome,fedAnimal,neededEnergy);
+			new Animal(this,
+					new Vector2d(random.nextInt(width), random.nextInt(height)),
+					startingEnergy,genome,fedAnimal,neededEnergy);
 		}
 	}
 
@@ -128,11 +124,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	public void remove(IMapElement mapOb) throws IllegalArgumentException {
 		if (mapOb.getClass() == Animal.class) {
 			try {
-				ArrayList<Animal> array = animals.get(mapOb.getPosition());
-				if (array.size() == 1) {
-					freeTiles++;
-				}
-				array.remove((Animal) mapOb);
+				animals.get(mapOb.getPosition()).remove((Animal) mapOb);
+				if (!this.isOccupied(mapOb.getPosition())) { freeTiles++; }
 				return;
 			} catch(Exception e) {
 				throw new IllegalArgumentException("Animal " + mapOb + "couldn't have been removed from the map, because it's not assigned to this map");
@@ -141,8 +134,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 		if (mapOb.getClass() == Grass.class) {
 			try {
-				freeTiles--;
 				grasses.remove(mapOb.getPosition(), (Grass) mapOb);
+				if (!this.isOccupied(mapOb.getPosition())) { freeTiles++; }
 				return;
 			} catch (Exception e) {
 				throw new IllegalArgumentException("The Grass object " + mapOb + " couldn't have been removed, because it's not assigned to this map");
@@ -195,7 +188,22 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 	@Override
 	public Vector2d move(Animal animal) {
-		return moveConstrainer.constraints(animal);
+		Vector2d initialPosition = animal.getPosition();
+
+		// the position the animal will end on (it hasn't moved yet)
+		Vector2d endPosition = moveConstrainer.constraints(animal);
+
+		if (initialPosition == endPosition) { return endPosition; }
+
+		// updating freeTiles
+		if (this.animalsAt(initialPosition).size() == 1 && !this.isOccupiedByGrass(initialPosition)) {
+			freeTiles++;
+		}
+		if (!this.isOccupied(endPosition)) {
+			freeTiles--;
+		}
+
+		return endPosition;
 	}
 
 	public boolean isOccupiedByAnimal(Vector2d position) {

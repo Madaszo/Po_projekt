@@ -56,14 +56,10 @@ public class App extends Application {
         final Button chooseConfButton = new Button("set path");
         chooseConfButton.setOnAction((value) -> {
             confFile = fileChooser.showOpenDialog(stage);
-            confTextField.setText(confFile.getPath());
-            // code below is for debugging purposes only
             if (confFile != null) {
                 confTextField.setText(confFile.getPath());
-                System.out.println(confFile.getPath());
             } else {
                 confTextField.setText("no configuration chosen");
-                System.out.println("null");
             }
         });
         HBox confBox = new HBox(label1,confTextField, chooseConfButton);

@@ -26,7 +26,7 @@ public interface IMap {
      *
      * @param object
      *            The {@link IMapElement} to remove from the map.
-     * @throws RuntimeException Throws exception if the object couldn't place correctly
+     * @throws RuntimeException Throws exception if the object couldn't be removed correctly
      */
     void remove(IMapElement object) throws Exception;
 

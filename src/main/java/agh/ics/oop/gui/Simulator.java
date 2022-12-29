@@ -128,8 +128,8 @@ public class Simulator implements EngineObserver, Runnable {
         numOfFreeTiles.setText(String.valueOf(mapStats.getFreeTilesNum()));
         mostPopularGenome.setText(Arrays.toString(mapStats.getMostPopularGenome()));
         mostPopularGenomeNum.setText(String.valueOf(mapStats.getMostPopularGenomeNum()));
-        averageEnergyLevel.setText(String.valueOf(mapStats.getAvgEnergy()));
-        averageLifespan.setText(String.valueOf(mapStats.getAvgLifespan()));
+        averageEnergyLevel.setText(String.format("%.2f", mapStats.getAvgEnergy()));
+        averageLifespan.setText(String.format("%.2f", mapStats.getAvgLifespan()));
     }
 
 
