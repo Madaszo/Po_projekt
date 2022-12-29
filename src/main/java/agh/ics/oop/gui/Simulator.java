@@ -57,8 +57,6 @@ public class Simulator implements EngineObserver, Runnable {
             Label label = new Label("Y\\X");
             GridPane.setHalignment(label, HPos.CENTER);
             gridPane.add(label,0,0);
-            gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH*2));
-            gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));
             Time = new Label(String.valueOf(System.currentTimeMillis()-time));
             time = System.currentTimeMillis();
             iid++;
