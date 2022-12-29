@@ -61,6 +61,7 @@ public class SimulationEngine implements IEngine, Runnable{
     public void moveAnimals() {
         for(Animal animal: animals){
             animal.move();
+            System.out.println(animal.getEnergy());
             mapStats.deltaSumEnergy(-1);
         }
     }
