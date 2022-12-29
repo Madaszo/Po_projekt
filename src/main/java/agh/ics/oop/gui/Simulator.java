@@ -33,11 +33,17 @@ public class Simulator implements EngineObserver, Runnable {
     JSONObject config;
     Stage stage;
     Scene scene;
+    long time;
+    Label id;
+    int iid;
+    Label Time;
     WorldMap map;
     GridPane gridPane;
     Map<String, Image> gub = new HashMap<String,Image>();
     ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
     Vector2d[] greenerGrass;
+    VBox vBox;
+
     static int tileWH = 15;
     Simulator(JSONObject conf, Stage stage){
         this.stage = stage;
@@ -51,6 +57,12 @@ public class Simulator implements EngineObserver, Runnable {
             Label label = new Label("Y\\X");
             GridPane.setHalignment(label, HPos.CENTER);
             gridPane.add(label,0,0);
+            gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH*2));
+            gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));
+            Time = new Label(String.valueOf(System.currentTimeMillis()-time));
+            time = System.currentTimeMillis();
+            iid++;
+            id = new Label(String.valueOf(iid));
 
             Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
             for(int i = 0; i < ur.x;i++){
@@ -63,8 +75,6 @@ public class Simulator implements EngineObserver, Runnable {
                 GridPane.setHalignment(label1, HPos.CENTER);
                 gridPane.add(label1,0,ur.y-i);
             }
-//            System.out.println(greenerGrass[0]);
-//            System.out.println(greenerGrass[1]);
             for(int i = 0; i < map.getWidth();i++){
                 for(int j = 0; j < map.getHeight(); j++){
                     Vector2d v2 = new Vector2d(i,j);
@@ -153,9 +163,14 @@ public class Simulator implements EngineObserver, Runnable {
 
             // todo statistics
             // statistics
+            iid = 0;
+            id = new Label(String.valueOf(iid));
+            time = System.currentTimeMillis();
+            Time = new Label(String.valueOf(time));
             TextField textField = new TextField("Field for test, maybe statistics should be there?");
-            Group statistics = new Group(textField);
-            HBox hBox = new HBox(statistics, scrollPane);
+            Group statistics = new Group(textField,Time,id);
+            vBox = new VBox(textField,Time,id);
+            HBox hBox = new HBox(vBox, scrollPane);
             Group root = new Group(hBox);
             scene = new Scene(root);
 
