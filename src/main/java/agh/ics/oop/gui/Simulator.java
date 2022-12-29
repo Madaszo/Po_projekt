@@ -10,9 +10,11 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -49,7 +51,8 @@ public class Simulator implements EngineObserver, Runnable {
     final Label mostPopularGenomeNum = new Label("");
     final Label averageEnergyLevel = new Label("");
     final Label averageLifespan = new Label("");
-
+    XYChart.Series<Number, Number> animalSeries = new XYChart.Series<>();
+    XYChart.Series<Number, Number> grassSeries = new XYChart.Series<>();
 
 
     static int tileWH = 15;
@@ -130,6 +133,8 @@ public class Simulator implements EngineObserver, Runnable {
         mostPopularGenomeNum.setText(String.valueOf(mapStats.getMostPopularGenomeNum()));
         averageEnergyLevel.setText(String.format("%.2f", mapStats.getAvgEnergy()));
         averageLifespan.setText(String.format("%.2f", mapStats.getAvgLifespan()));
+        animalSeries.getData().add(new XYChart.Data<>(mapStats.getSimulationTime(), mapStats.getNumOfAnimals()));
+        grassSeries.getData().add(new XYChart.Data<>(mapStats.getSimulationTime(), mapStats.getNumOfGrasses()));
     }
 
 
@@ -178,6 +183,19 @@ public class Simulator implements EngineObserver, Runnable {
                     Screen.getPrimary().getBounds().getWidth()*0.8);
             scrollPane.setPrefSize(scrollPaneEdge ,scrollPaneEdge);
 
+            // CHART INITIALIZATION
+            final NumberAxis xAxis = new NumberAxis();
+            xAxis.setLabel("Day of simulation");
+            final NumberAxis yAxis = new NumberAxis();
+            yAxis.setLabel("Population");
+            final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+            lineChart.setTitle("Grass and animal population over time");
+            lineChart.setCreateSymbols(false);
+            animalSeries.setName("Animals population");
+            lineChart.getData().add(animalSeries);
+            grassSeries.setName("Number of grass patches");
+            lineChart.getData().add(grassSeries);
+
             // STATISTICS INITIALIZATION
             VBox statsBox = new VBox(new Label("Simulation statistics:"),
                     new HBox(new Label("Simulation time: "), simulationTime),
@@ -186,7 +204,8 @@ public class Simulator implements EngineObserver, Runnable {
                     new HBox(new Label("Number of free tiles: "), numOfFreeTiles),
                     new HBox(new Label("The most popular genome "), mostPopularGenome, new Label(" has "), mostPopularGenomeNum, new Label(" representatives")),
                     new HBox(new Label("Average energy level: "), averageEnergyLevel),
-                    new HBox(new Label("Average lifespan: "), averageLifespan));
+                    new HBox(new Label("Average lifespan: "), averageLifespan),
+                    lineChart);
 
             HBox hBox = new HBox(statsBox, scrollPane);
             Group root = new Group(hBox);
