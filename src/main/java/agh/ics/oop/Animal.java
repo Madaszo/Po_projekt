@@ -109,12 +109,14 @@ public class Animal implements IMapElement{
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
     }
-    public void eat() throws Exception {
+    public boolean eat() throws Exception {
         if (map.isOccupiedByGrass(this.getPosition())){
             map.remove(map.getGrass(this.getPosition()));
             energy += map.getEnergyGain();
             this.eatenGrass++;
+            return true;
         }
+        return false;
     }
     public void move() {
         int d = genome[currentGene];
