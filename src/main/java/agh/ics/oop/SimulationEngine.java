@@ -22,7 +22,7 @@ public class SimulationEngine implements IEngine, Runnable{
         }
     }
     @Override
-    public void run(int i) throws Exception {
+    public void runs(int i) throws Exception {
         for(int j = 0; j < i; j++){
             animals.sort(new AnimalComparator());
             killAnimals();
@@ -32,6 +32,7 @@ public class SimulationEngine implements IEngine, Runnable{
             eat();
             procreate();
             grassify();
+            System.out.println(j);
             System.out.println(map);
             observer.updateScene(this);
         }
@@ -55,9 +56,7 @@ public class SimulationEngine implements IEngine, Runnable{
     @Override
     public void moveAnimals() {
         for(Animal animal: animals){
-
             animal.move();
-            System.out.println(animal.getEnergy());
         }
     }
 
@@ -105,7 +104,6 @@ public class SimulationEngine implements IEngine, Runnable{
             }
             procreate();
             grassify();
-            System.out.println(map);
             observer.updateScene(this);
         }
     }

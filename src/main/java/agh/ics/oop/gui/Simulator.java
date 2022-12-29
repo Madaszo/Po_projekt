@@ -1,23 +1,32 @@
 package agh.ics.oop.gui;
 
-import agh.ics.oop.*;
+import agh.ics.oop.EngineObserver;
+import agh.ics.oop.SimulationEngine;
+import agh.ics.oop.Vector2d;
+import agh.ics.oop.WorldMap;
 import agh.ics.oop.rules.DeterministicGenomeExecutioner;
 import agh.ics.oop.rules.FullRandomMutationer;
 import agh.ics.oop.rules.GlobeConstraint;
 import agh.ics.oop.rules.GreenEquator;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Simulator implements EngineObserver, Runnable {
     JSONObject config;
@@ -25,6 +34,8 @@ public class Simulator implements EngineObserver, Runnable {
     Scene scene;
     WorldMap map;
     GridPane gridPane;
+    Map<String, Image> gub = new HashMap<String,Image>();
+    Vector2d[] greenerGrass;
     static int tileWH = 15;
     Simulator(JSONObject conf, Stage stage){
         this.stage = stage;
@@ -41,28 +52,55 @@ public class Simulator implements EngineObserver, Runnable {
             gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));
 
             Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
-            for(int i = 0; i <= ur.x;i++){
+            for(int i = 0; i < ur.x;i++){
                 Label label1 = new Label(Integer.toString(i));
                 GridPane.setHalignment(label1, HPos.CENTER);
                 gridPane.add(label1,i+1,0);
                 gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH));
             }
-            for(int i = 0; i <= ur.y;i++){
+            for(int i = 0; i < ur.y;i++){
                 Label label1 = new Label(Integer.toString(i));
                 GridPane.setHalignment(label1, HPos.CENTER);
-                gridPane.add(label1,0,ur.y-i+1);
+                gridPane.add(label1,0,ur.y-i);
                 gridPane.getRowConstraints().add(new RowConstraints(tileWH));
             }
-            for(Animal animal: SE.animals){
-                GuiElementBox gub;
-                Vector2d position = animal.getPosition();
-                try {
-                    gub = new GuiElementBox(animal);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
+            System.out.println(greenerGrass[0]);
+            System.out.println(greenerGrass[1]);
+            for(int i = 0; i < map.getWidth();i++){
+                for(int j = 0; j < map.getHeight(); j++){
+                    Vector2d v2 = new Vector2d(i,j);
+                    if(v2.between(greenerGrass)) {
+                        System.out.println("lol");
+                        Pane pane = new Pane();
+                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),
+                                new CornerRadii(0), new Insets(0))));
+                        gridPane.add(pane, i + 1, ur.y - j);
+                    }else {
+                        Pane pane = new Pane();
+                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(152, 251, 152),
+                                new CornerRadii(0), new Insets(0))));
+                        gridPane.add(pane, i + 1, ur.y - j);
+                    }
+
+                    if(map.animalsAt(v2) != null && map.animalsAt(v2).size()>1){
+                        ImageView im = new ImageView(gub.get("src\\main\\resources\\images\\love.png"));
+                        im.setFitHeight(tileWH);
+                        im.setFitWidth(tileWH);
+                        gridPane.add(im,i+1,ur.y-j);
+                    }else if(map.animalsAt(v2) != null && map.animalsAt(v2).size()==1){
+                        ImageView im = new ImageView(gub.get(map.animalsAt(v2).get(0).getPath()));
+                        im.setFitHeight(tileWH);
+                        im.setFitWidth(tileWH);
+                        gridPane.add(im,i+1,ur.y-j);
+                    }else if (map.getGrass(v2)!=null) {
+                        ImageView im = new ImageView(gub.get(map.getGrass(v2).getPath()));
+                        im.setFitHeight(tileWH);
+                        im.setFitWidth(tileWH);
+                        gridPane.add(im,i+1,ur.y-j);
+                    }
                 }
-                gridPane.add(gub.getImageView(),position.x,ur.y-position.y+1);
             }
+
             gridPane.setGridLinesVisible(true);
         });
     }
@@ -71,7 +109,11 @@ public class Simulator implements EngineObserver, Runnable {
     @Override
     public void run() {
         stage.setTitle("Simulator");
-        Scene scene;
+        try {
+            gub = GuiElementBox.resources("src/main/resources/images");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         try {
             Long w = (Long) config.get("width");
             Long h = (Long) config.get("height");
@@ -90,7 +132,8 @@ public class Simulator implements EngineObserver, Runnable {
                     max.intValue(),new GreenEquator(), new FullRandomMutationer(),
                     new DeterministicGenomeExecutioner(),
                     new GlobeConstraint(w.intValue(),h.intValue()));
-
+            map.randomAnimals(10);
+            greenerGrass = map.grassSpawner.greenerGrass(map);
             // gridPane and scrollPane
             gridPane = new GridPane();
             ScrollPane scrollPane = new ScrollPane(gridPane);
@@ -109,7 +152,11 @@ public class Simulator implements EngineObserver, Runnable {
             SimulationEngine SE = new SimulationEngine(map,this);
             stage.setScene(scene);
             stage.show();
+            System.out.println(map);
             updateScene(SE);
+//            SE.run(100);
+//            Thread thread = new Thread(SE);
+//            thread.start();
 
     } catch (Exception e) {
             throw new RuntimeException(e);

@@ -39,6 +39,20 @@ public class Vector2d {
         Vector2d v2 = (Vector2d) other;
         return (this.x == v2.x) && (this.y == v2.y);
     }
+    public boolean between(Vector2d[] vectors){
+        System.out.println("=============");
+        System.out.println(this);
+        System.out.println(vectors[0].lowerLeft(vectors[1]).lowerLeft(this));
+        System.out.println(vectors[0].lowerLeft(vectors[1]));
+        System.out.println(vectors[0].upperRight(vectors[1]).upperRight(this));
+        System.out.println(vectors[0].upperRight(vectors[1]));
+
+        if(vectors[0].lowerLeft(vectors[1]).lowerLeft(this).equals(vectors[0].lowerLeft(vectors[1])) &&
+                vectors[0].upperRight(vectors[1]).upperRight(this).equals(vectors[0].upperRight(vectors[1]))){
+            return true;
+        }
+        return false;
+    }
     @Override
     public int hashCode() {
         return Objects.hash(this.x, this.y);

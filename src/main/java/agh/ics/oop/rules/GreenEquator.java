@@ -33,4 +33,14 @@ public class GreenEquator implements IRuleSpawnGrass{
 			map.place(new Grass(tmp));
 		}
 	}
+
+	@Override
+	public Vector2d[] greenerGrass(IMap map) {
+		Vector2d[] w = new Vector2d[2];
+		int h =map.getHeight();
+		int wi = map.getWidth();
+		w[0] = new Vector2d(0,(h/2)-(h*2/10));
+		w[1] = new Vector2d(wi,(h/2)+(h*2/10));
+		return w;
+	}
 }
