@@ -36,6 +36,7 @@ public class SimulationEngine implements IEngine, Runnable{
             procreate();
             grassify();
 //            System.out.println(map);
+            mapStats.addSimulationTime();
             observer.updateScene(this);
         }
     }
@@ -59,6 +60,7 @@ public class SimulationEngine implements IEngine, Runnable{
     public void moveAnimals() {
         for(Animal animal: animals){
             animal.move();
+            mapStats.deltaSumEnergy(-1);
         }
     }
 
@@ -71,6 +73,7 @@ public class SimulationEngine implements IEngine, Runnable{
     public void eat() throws Exception {
         for(Animal animal: animals){
             animal.eat();
+            mapStats.deltaSumEnergy(map.getEnergyGain());
         }
 
     }
@@ -91,8 +94,7 @@ public class SimulationEngine implements IEngine, Runnable{
     @Override
     public void run() {
         while (true){
-            animals.sort(Comparator.comparing(Animal::getEnergy));
-            Collections.reverse(animals);
+            animals.sort(new AnimalComparator());
             try {
                 killAnimals();
             } catch (Exception e) {
@@ -106,6 +108,7 @@ public class SimulationEngine implements IEngine, Runnable{
             }
             procreate();
             grassify();
+            mapStats.addSimulationTime();
             observer.updateScene(this);
             try {
                 waitForRunLater();

@@ -1,9 +1,6 @@
 package agh.ics.oop.gui;
 
-import agh.ics.oop.EngineObserver;
-import agh.ics.oop.SimulationEngine;
-import agh.ics.oop.Vector2d;
-import agh.ics.oop.WorldMap;
+import agh.ics.oop.*;
 import agh.ics.oop.rules.DeterministicGenomeExecutioner;
 import agh.ics.oop.rules.FullRandomMutationer;
 import agh.ics.oop.rules.GlobeConstraint;
@@ -26,6 +23,7 @@ import org.json.simple.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,16 +31,26 @@ public class Simulator implements EngineObserver, Runnable {
     JSONObject config;
     Stage stage;
     Scene scene;
-    long time;
-    Label id;
-    int iid;
-    Label Time;
     WorldMap map;
+    SimulationEngine SE;
+    MapStats mapStats;
+    Thread simEngineThread;
     GridPane gridPane;
     Map<String, Image> gub = new HashMap<String,Image>();
     ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
     Vector2d[] greenerGrass;
-    VBox vBox;
+
+    // statistics fields
+    final Label simulationTime = new Label("");
+    final Label numOfAnimals = new Label("");
+    final Label numOfPlants = new Label("");
+    final Label numOfFreeTiles = new Label("");
+    final Label mostPopularGenome = new Label("");
+    final Label mostPopularGenomeNum = new Label("");
+    final Label averageEnergyLevel = new Label("");
+    final Label averageLifespan = new Label("");
+
+
 
     static int tileWH = 15;
     Simulator(JSONObject conf, Stage stage){
@@ -52,65 +60,76 @@ public class Simulator implements EngineObserver, Runnable {
 
     public void updateScene(SimulationEngine SE) {
         Platform.runLater(()->{
-            gridPane.getChildren().removeAll(imageViews);
-            imageViews.clear();
-            Label label = new Label("Y\\X");
-            GridPane.setHalignment(label, HPos.CENTER);
-            gridPane.add(label,0,0);
-            Time = new Label(String.valueOf(System.currentTimeMillis()-time));
-            time = System.currentTimeMillis();
-            iid++;
-            id = new Label(String.valueOf(iid));
+            updateGrid();
+            updateStatistics();
+        });
+    }
 
-            Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
-            for(int i = 0; i < ur.x;i++){
-                Label label1 = new Label(Integer.toString(i));
-                GridPane.setHalignment(label1, HPos.CENTER);
-                gridPane.add(label1,i+1,0);
-            }
-            for(int i = 0; i < ur.y;i++){
-                Label label1 = new Label(Integer.toString(i));
-                GridPane.setHalignment(label1, HPos.CENTER);
-                gridPane.add(label1,0,ur.y-i);
-            }
-            for(int i = 0; i < map.getWidth();i++){
-                for(int j = 0; j < map.getHeight(); j++){
-                    Vector2d v2 = new Vector2d(i,j);
-                    if(v2.between(greenerGrass)) {
-                        Pane pane = new Pane();
-                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),
-                                new CornerRadii(0), new Insets(0))));
-                        gridPane.add(pane, i + 1, ur.y - j);
-                    }else {
-                        Pane pane = new Pane();
-                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(152, 251, 152),
-                                new CornerRadii(0), new Insets(0))));
-                        gridPane.add(pane, i + 1, ur.y - j);
-                    }
+    private void updateGrid() {
+        gridPane.getChildren().removeAll(imageViews);
+        imageViews.clear();
+        Label label = new Label("Y\\X");
+        GridPane.setHalignment(label, HPos.CENTER);
+        gridPane.add(label,0,0);
 
-                    if(map.animalsAt(v2) != null && map.animalsAt(v2).size()>1){
-                        ImageView im = new ImageView(gub.get("src\\main\\resources\\images\\love.png"));
-                        im.setFitHeight(tileWH);
-                        im.setFitWidth(tileWH);
-                        imageViews.add(im);
-                        gridPane.add(im,i+1,ur.y-j);
-                    }else if(map.animalsAt(v2) != null && map.animalsAt(v2).size()==1){
-                        ImageView im = new ImageView(gub.get(map.animalsAt(v2).get(0).getPath()));
-                        im.setFitHeight(tileWH);
-                        im.setFitWidth(tileWH);
-                        imageViews.add(im);
-                        gridPane.add(im,i+1,ur.y-j);
-                    }else if (map.getGrass(v2)!=null) {
-                        ImageView im = new ImageView(gub.get(map.getGrass(v2).getPath()));
-                        im.setFitHeight(tileWH);
-                        im.setFitWidth(tileWH);
-                        imageViews.add(im);
-                        gridPane.add(im,i+1,ur.y-j);
-                    }
+        Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
+        for(int i = 0; i < ur.x;i++){
+            Label label1 = new Label(Integer.toString(i));
+            GridPane.setHalignment(label1, HPos.CENTER);
+            gridPane.add(label1,i+1,0);
+        }
+        for(int i = 0; i < ur.y;i++){
+            Label label1 = new Label(Integer.toString(i));
+            GridPane.setHalignment(label1, HPos.CENTER);
+            gridPane.add(label1,0,ur.y-i);
+        }
+        for(int i = 0; i < map.getWidth();i++){
+            for(int j = 0; j < map.getHeight(); j++){
+                Vector2d v2 = new Vector2d(i,j);
+                if(v2.between(greenerGrass)) {
+                    Pane pane = new Pane();
+                    pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),
+                            new CornerRadii(0), new Insets(0))));
+                    gridPane.add(pane, i + 1, ur.y - j);
+                }else {
+                    Pane pane = new Pane();
+                    pane.setBackground(new Background(new BackgroundFill(Color.rgb(152, 251, 152),
+                            new CornerRadii(0), new Insets(0))));
+                    gridPane.add(pane, i + 1, ur.y - j);
+                }
+
+                if(map.animalsAt(v2) != null && map.animalsAt(v2).size()>1){
+                    ImageView im = new ImageView(gub.get("src\\main\\resources\\images\\love.png"));
+                    im.setFitHeight(tileWH);
+                    im.setFitWidth(tileWH);
+                    imageViews.add(im);
+                    gridPane.add(im,i+1,ur.y-j);
+                }else if(map.animalsAt(v2) != null && map.animalsAt(v2).size()==1){
+                    ImageView im = new ImageView(gub.get(map.animalsAt(v2).get(0).getPath()));
+                    im.setFitHeight(tileWH);
+                    im.setFitWidth(tileWH);
+                    imageViews.add(im);
+                    gridPane.add(im,i+1,ur.y-j);
+                }else if (map.getGrass(v2)!=null) {
+                    ImageView im = new ImageView(gub.get(map.getGrass(v2).getPath()));
+                    im.setFitHeight(tileWH);
+                    im.setFitWidth(tileWH);
+                    imageViews.add(im);
+                    gridPane.add(im,i+1,ur.y-j);
                 }
             }
+        }
+    }
 
-        });
+    private void updateStatistics() {
+        simulationTime.setText(String.valueOf(mapStats.getSimulationTime()));
+        numOfAnimals.setText(String.valueOf(mapStats.getNumOfAnimals()));
+        numOfPlants.setText(String.valueOf(mapStats.getNumOfGrasses()));
+        numOfFreeTiles.setText(String.valueOf(mapStats.getFreeTilesNum()));
+        mostPopularGenome.setText(Arrays.toString(mapStats.getMostPopularGenome()));
+        mostPopularGenomeNum.setText(String.valueOf(mapStats.getMostPopularGenomeNum()));
+        averageEnergyLevel.setText(String.valueOf(mapStats.getAvgEnergy()));
+        averageLifespan.setText(String.valueOf(mapStats.getAvgLifespan()));
     }
 
 
@@ -159,26 +178,28 @@ public class Simulator implements EngineObserver, Runnable {
                     Screen.getPrimary().getBounds().getWidth()*0.8);
             scrollPane.setPrefSize(scrollPaneEdge ,scrollPaneEdge);
 
-            // todo statistics
-            // statistics
-            iid = 0;
-            id = new Label(String.valueOf(iid));
-            time = System.currentTimeMillis();
-            Time = new Label(String.valueOf(time));
-            TextField textField = new TextField("Field for test, maybe statistics should be there?");
-            Group statistics = new Group(textField,Time,id);
-            vBox = new VBox(textField,Time,id);
-            HBox hBox = new HBox(vBox, scrollPane);
+            // STATISTICS INITIALIZATION
+            VBox statsBox = new VBox(new Label("Simulation statistics:"),
+                    new HBox(new Label("Simulation time: "), simulationTime),
+                    new HBox(new Label("Number of animals: "), numOfAnimals),
+                    new HBox(new Label("Number of plants: "), numOfPlants),
+                    new HBox(new Label("Number of free tiles: "), numOfFreeTiles),
+                    new HBox(new Label("The most popular genome "), mostPopularGenome, new Label(" has "), mostPopularGenomeNum, new Label(" representatives")),
+                    new HBox(new Label("Average energy level: "), averageEnergyLevel),
+                    new HBox(new Label("Average lifespan: "), averageLifespan));
+
+            HBox hBox = new HBox(statsBox, scrollPane);
             Group root = new Group(hBox);
             scene = new Scene(root);
 
-            SimulationEngine SE = new SimulationEngine(map,this);
+            SE = new SimulationEngine(map,this);
+            mapStats = SE.mapStats;
             stage.setScene(scene);
             stage.show();
             System.out.println(map);
             updateScene(SE);
-            Thread thread = new Thread(SE);
-            thread.start();
+            simEngineThread = new Thread(SE);
+            simEngineThread.start();
 
     } catch (Exception e) {
             throw new RuntimeException(e);
