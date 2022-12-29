@@ -51,21 +51,17 @@ public class Simulator implements EngineObserver, Runnable {
             Label label = new Label("Y\\X");
             GridPane.setHalignment(label, HPos.CENTER);
             gridPane.add(label,0,0);
-            gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH*2));
-            gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));
 
             Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
             for(int i = 0; i < ur.x;i++){
                 Label label1 = new Label(Integer.toString(i));
                 GridPane.setHalignment(label1, HPos.CENTER);
                 gridPane.add(label1,i+1,0);
-                gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH));
             }
             for(int i = 0; i < ur.y;i++){
                 Label label1 = new Label(Integer.toString(i));
                 GridPane.setHalignment(label1, HPos.CENTER);
                 gridPane.add(label1,0,ur.y-i);
-                gridPane.getRowConstraints().add(new RowConstraints(tileWH));
             }
 //            System.out.println(greenerGrass[0]);
 //            System.out.println(greenerGrass[1]);
@@ -138,8 +134,18 @@ public class Simulator implements EngineObserver, Runnable {
                     new GlobeConstraint(w.intValue(),h.intValue()));
             map.randomAnimals(100);
             greenerGrass = map.grassSpawner.greenerGrass(map);
-            // gridPane and scrollPane
+
+            // GRID INITIALIZATION
             gridPane = new GridPane();
+            gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH*2));
+            gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));
+            for(int i = 0; i < map.getWidth();i++){
+                gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH));
+            }
+            for(int i = 0; i < map.getHeight();i++){
+                gridPane.getRowConstraints().add(new RowConstraints(tileWH));
+            }
+
             ScrollPane scrollPane = new ScrollPane(gridPane);
             double scrollPaneEdge = Math.min(Screen.getPrimary().getBounds().getHeight()*0.8,
                     Screen.getPrimary().getBounds().getWidth()*0.8);
