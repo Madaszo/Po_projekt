@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ public class Simulator implements EngineObserver, Runnable {
     WorldMap map;
     GridPane gridPane;
     Map<String, Image> gub = new HashMap<String,Image>();
+    ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
     Vector2d[] greenerGrass;
     static int tileWH = 15;
     Simulator(JSONObject conf, Stage stage){
@@ -44,7 +46,8 @@ public class Simulator implements EngineObserver, Runnable {
 
     public void updateScene(SimulationEngine SE) {
         Platform.runLater(()->{
-            gridPane.getChildren().clear();
+            gridPane.getChildren().removeAll(imageViews);
+            imageViews.clear();
             Label label = new Label("Y\\X");
             GridPane.setHalignment(label, HPos.CENTER);
             gridPane.add(label,0,0);
@@ -64,13 +67,12 @@ public class Simulator implements EngineObserver, Runnable {
                 gridPane.add(label1,0,ur.y-i);
                 gridPane.getRowConstraints().add(new RowConstraints(tileWH));
             }
-            System.out.println(greenerGrass[0]);
-            System.out.println(greenerGrass[1]);
+//            System.out.println(greenerGrass[0]);
+//            System.out.println(greenerGrass[1]);
             for(int i = 0; i < map.getWidth();i++){
                 for(int j = 0; j < map.getHeight(); j++){
                     Vector2d v2 = new Vector2d(i,j);
                     if(v2.between(greenerGrass)) {
-                        System.out.println("lol");
                         Pane pane = new Pane();
                         pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),
                                 new CornerRadii(0), new Insets(0))));
@@ -86,22 +88,24 @@ public class Simulator implements EngineObserver, Runnable {
                         ImageView im = new ImageView(gub.get("src\\main\\resources\\images\\love.png"));
                         im.setFitHeight(tileWH);
                         im.setFitWidth(tileWH);
+                        imageViews.add(im);
                         gridPane.add(im,i+1,ur.y-j);
                     }else if(map.animalsAt(v2) != null && map.animalsAt(v2).size()==1){
                         ImageView im = new ImageView(gub.get(map.animalsAt(v2).get(0).getPath()));
                         im.setFitHeight(tileWH);
                         im.setFitWidth(tileWH);
+                        imageViews.add(im);
                         gridPane.add(im,i+1,ur.y-j);
                     }else if (map.getGrass(v2)!=null) {
                         ImageView im = new ImageView(gub.get(map.getGrass(v2).getPath()));
                         im.setFitHeight(tileWH);
                         im.setFitWidth(tileWH);
+                        imageViews.add(im);
                         gridPane.add(im,i+1,ur.y-j);
                     }
                 }
             }
 
-            gridPane.setGridLinesVisible(true);
         });
     }
 
@@ -132,7 +136,7 @@ public class Simulator implements EngineObserver, Runnable {
                     max.intValue(),new GreenEquator(), new FullRandomMutationer(),
                     new DeterministicGenomeExecutioner(),
                     new GlobeConstraint(w.intValue(),h.intValue()));
-            map.randomAnimals(10);
+            map.randomAnimals(100);
             greenerGrass = map.grassSpawner.greenerGrass(map);
             // gridPane and scrollPane
             gridPane = new GridPane();
@@ -154,9 +158,8 @@ public class Simulator implements EngineObserver, Runnable {
             stage.show();
             System.out.println(map);
             updateScene(SE);
-//            SE.run(100);
-//            Thread thread = new Thread(SE);
-//            thread.start();
+            Thread thread = new Thread(SE);
+            thread.start();
 
     } catch (Exception e) {
             throw new RuntimeException(e);
