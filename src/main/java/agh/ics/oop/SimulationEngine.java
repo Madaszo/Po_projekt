@@ -20,6 +20,7 @@ public class SimulationEngine implements IEngine, Runnable{
                 for (Animal animal : mAnimals) {
                     animals.add(animal);
                     mapStats.animalBorn(animal);
+                    mapStats.deltaSumEnergy(animal.getEnergy());
                 }
             }
         }
@@ -60,6 +61,7 @@ public class SimulationEngine implements IEngine, Runnable{
     public void moveAnimals() {
         for(Animal animal: animals){
             animal.move();
+            System.out.println(animal.getEnergy());
             mapStats.deltaSumEnergy(-1);
         }
     }
@@ -72,8 +74,9 @@ public class SimulationEngine implements IEngine, Runnable{
     @Override
     public void eat() throws Exception {
         for(Animal animal: animals){
-            animal.eat();
-            mapStats.deltaSumEnergy(map.getEnergyGain());
+            if (animal.eat()) {
+                mapStats.deltaSumEnergy(map.getEnergyGain());
+            }
         }
 
     }
