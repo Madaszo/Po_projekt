@@ -61,14 +61,18 @@ public class Animal implements IMapElement{
             ArrayList<Animal> sodoma = map.animalsAt(this.getPosition());
             sodoma.sort(new AnimalComparator());
             if(this.energy > fedAnimal && sodoma.get(1).energy>fedAnimal){
+                int energyBefore = this.energy + sodoma.get(1).getEnergy();
                 Animal baby =
                         new Animal(
                                 map,
                                 this.position,
-                                this.energy/2+sodoma.get(1).energy/2,
+                                this.energy/2 + sodoma.get(1).energy/2,
                                 this.createGenome(sodoma.get(1)), fedAnimal,neededEnergy);
-                this.energy/=2;
-                sodoma.get(1).energy/=2;
+                this.energy -= this.energy/2;
+                sodoma.get(1).energy -= sodoma.get(1).getEnergy()/2;
+                if (energyBefore != this.energy + sodoma.get(1).getEnergy() + baby.energy) {
+                    System.out.println("Energy law violation!!!!!!!!!!!!!!!");
+                }
                 baby.direction = MapDirection.fromInt(random.nextInt(8));
                 offspringNum++;
                 return baby;
