@@ -21,12 +21,12 @@ public class GreenEquator implements IRuleSpawnGrass{
 				if (j > 80) {
 					do {
 						y = rand.nextInt(h);
-					} while ((y > (h / 2) - (h * 2 / 10)) && (y < (h / 2) + (h * 2 / 10)));
+					} while ((y > (h / 2) - (h  / 10)) && (y < (h / 2) + (h / 10)));
 					tmp = new Vector2d(rand.nextInt(w), y);
 				}else{
 					do {
 						y = rand.nextInt(h);
-					} while (!((y > (h / 2) - (h * 2 / 10)) && (y < (h / 2) + (h * 2 / 10))));
+					} while (!((y >= (h / 2) - (h  / 10)) && (y < (h / 2) + (h / 10))));
 					tmp = new Vector2d(rand.nextInt(w), y);
 				}
 			} while (map.isOccupiedByGrass(tmp));
@@ -39,8 +39,8 @@ public class GreenEquator implements IRuleSpawnGrass{
 		Vector2d[] w = new Vector2d[2];
 		int h =map.getHeight();
 		int wi = map.getWidth();
-		w[0] = new Vector2d(0,(h/2)-(h*2/10));
-		w[1] = new Vector2d(wi,(h/2)+(h*2/10));
+		w[0] = new Vector2d(0,(h/2)-(h/10));
+		w[1] = new Vector2d(wi,(h/2)+(h/10)-1);
 		return w;
 	}
 }
