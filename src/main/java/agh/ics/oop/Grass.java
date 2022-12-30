@@ -8,7 +8,7 @@ public class Grass implements IMapElement {
 
     @Override
     public String getPath() {
-        return "src/main/resources/grass.png";
+        return "src\\main\\resources\\images\\grass.png";
     }
 
     @Override

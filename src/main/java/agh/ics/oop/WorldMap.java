@@ -22,7 +22,7 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	final int neededEnergy;
 
 	// map rules (we ask them what to do in certain situations)
-	IRuleSpawnGrass grassSpawner;
+	public IRuleSpawnGrass grassSpawner;
 	IRuleMutations mutator;
 	IRuleGenomeExecution genomeExecutioner;
 	IRuleMoveConstraints moveConstrainer;
@@ -153,7 +153,6 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 	public void positionChanged(Animal movedAnimal, Vector2d oldPosition, Vector2d newPosition) {
 		animals.get(oldPosition).remove(movedAnimal);
-		System.out.println(newPosition);
 		animals.get(newPosition).add(movedAnimal);
 	}
 

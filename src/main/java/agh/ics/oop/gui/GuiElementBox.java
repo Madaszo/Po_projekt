@@ -1,22 +1,25 @@
 package agh.ics.oop.gui;
 
-import agh.ics.oop.IMapElement;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
+import java.util.HashMap;
+import java.util.Map;
 public class GuiElementBox {
-    public Image image;
-    public ImageView imageView;
-    public GuiElementBox(IMapElement element) throws FileNotFoundException {
-        image = new Image(new FileInputStream(element.getPath()));
-        imageView = new ImageView(image);
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-    }
-    public ImageView getImageView(){
-        return imageView;
+    public static Map<String,Image> resources(String path) throws FileNotFoundException {
+        Map<String,Image> w = new HashMap<String,Image>();
+        File dir = new File(path);
+        File[] directoryListing = dir.listFiles();
+        if (directoryListing != null){
+            for (File child : directoryListing){
+                String getPath = child.getPath();
+                System.out.println(getPath);
+                Image image = new Image(new FileInputStream(getPath));
+                w.put(getPath,image);
+            }
+        }
+        return w;
     }
 }

@@ -81,14 +81,14 @@ public class Animal implements IMapElement{
     @Override
     public String getPath() {
         return switch (direction){
-            case EAST -> "src/main/resources/E.png";
-            case NORTHEAST -> "src/main/resources/NE.png";
-            case WEST -> "src/main/resources/W.png";
-            case NORTHWEST -> "src/main/resources/NW.png";
-            case SOUTH -> "src/main/resources/S.png";
-            case SOUTHEAST -> "src/main/resources/SE.png";
-            case SOUTHWEST -> "src/main/resources/SW.png";
-            case NORTH -> "src/main/resources/N.png";
+            case EAST -> "src\\main\\resources\\images\\E.png";
+            case NORTHEAST -> "src\\main\\resources\\images\\NE.png";
+            case WEST -> "src\\main\\resources\\images\\W.png";
+            case NORTHWEST -> "src\\main\\resources\\images\\NW.png";
+            case SOUTH -> "src\\main\\resources\\images\\S.png";
+            case SOUTHEAST -> "src\\main\\resources\\images\\SE.png";
+            case SOUTHWEST -> "src\\main\\resources\\images\\SW.png";
+            case NORTH -> "src\\main\\resources\\images\\N.png";
         };
     }
 
@@ -157,7 +157,7 @@ class AnimalComparator implements Comparator<Animal> {
         if (a.getEnergy() != b.getEnergy()) {return b.getEnergy() - a.getEnergy();}
         if (a.getAge() != b.getAge()) {return b.getAge() - a.getAge();}
         if (a.offspringNum != b.offspringNum) {return b.offspringNum - a.offspringNum;}
-        return -1;
+        return 0;
     }
 
 }

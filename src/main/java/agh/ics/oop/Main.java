@@ -18,7 +18,7 @@ public class Main {
 //			Animal pig = new Animal(map, new Vector2d(1, 0), 30, new int[]{0, 0, 4, 2, 2, 1, 3, 7},10,2);
 //			map.randomAnimals(100);
 //			System.out.println(map);
-//			SimulationEngine SE = new SimulationEngine(map);
+//			SimulationEngine SE = new SimulationEngine(map,null);
 //			SE.run(3100);
 			Application.launch(App.class,args);
 		}
