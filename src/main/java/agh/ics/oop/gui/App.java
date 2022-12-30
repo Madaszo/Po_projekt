@@ -146,7 +146,6 @@ public class App extends Application {
                 stages[i] = new Stage();
 
                 if (csvDirectory == null) {
-                    System.out.println("csvDirectory is null");
                     simulators[i] = new Simulator(configuration,stages[i]);
                 } else {
                     String fileName;
@@ -158,8 +157,6 @@ public class App extends Application {
                     }
                     File csvFile = new File(csvDirectory.getPath() + File.separator + fileName);
                     csvFile.createNewFile();
-                    System.out.print("csvDirectory isn't null ");
-                    System.out.println(csvFile.getPath());
                     simulators[i] = new Simulator(configuration,stages[i], csvFile);
                 }
 
