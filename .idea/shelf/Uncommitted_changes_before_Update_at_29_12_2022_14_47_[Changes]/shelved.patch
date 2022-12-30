@@ -1,0 +1,66 @@
+Index: src/main/java/agh/ics/oop/gui/Simulator.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package agh.ics.oop.gui;\r\n\r\nimport agh.ics.oop.EngineObserver;\r\nimport agh.ics.oop.SimulationEngine;\r\nimport agh.ics.oop.Vector2d;\r\nimport agh.ics.oop.WorldMap;\r\nimport agh.ics.oop.rules.DeterministicGenomeExecutioner;\r\nimport agh.ics.oop.rules.FullRandomMutationer;\r\nimport agh.ics.oop.rules.GlobeConstraint;\r\nimport agh.ics.oop.rules.GreenEquator;\r\nimport javafx.application.Platform;\r\nimport javafx.geometry.HPos;\r\nimport javafx.geometry.Insets;\r\nimport javafx.scene.Group;\r\nimport javafx.scene.Scene;\r\nimport javafx.scene.control.Label;\r\nimport javafx.scene.control.ScrollPane;\r\nimport javafx.scene.control.TextField;\r\nimport javafx.scene.image.Image;\r\nimport javafx.scene.image.ImageView;\r\nimport javafx.scene.layout.*;\r\nimport javafx.scene.paint.Color;\r\nimport javafx.stage.Screen;\r\nimport javafx.stage.Stage;\r\nimport org.json.simple.JSONObject;\r\n\r\nimport java.io.FileNotFoundException;\r\nimport java.util.ArrayList;\r\nimport java.util.HashMap;\r\nimport java.util.Map;\r\n\r\npublic class Simulator implements EngineObserver, Runnable {\r\n    JSONObject config;\r\n    Stage stage;\r\n    Scene scene;\r\n    WorldMap map;\r\n    GridPane gridPane;\r\n    Map<String, Image> gub = new HashMap<String,Image>();\r\n    ArrayList<ImageView> imageViews = new ArrayList<ImageView>();\r\n    Vector2d[] greenerGrass;\r\n    static int tileWH = 15;\r\n    Simulator(JSONObject conf, Stage stage){\r\n        this.stage = stage;\r\n        this.config = conf;\r\n    }\r\n\r\n    public void updateScene(SimulationEngine SE) {\r\n        Platform.runLater(()->{\r\n            gridPane.getChildren().removeAll(imageViews);\r\n            imageViews.clear();\r\n            Label label = new Label(\"Y\\\\X\");\r\n            GridPane.setHalignment(label, HPos.CENTER);\r\n            gridPane.add(label,0,0);\r\n            gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH*2));\r\n            gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));\r\n\r\n            Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());\r\n            for(int i = 0; i < ur.x;i++){\r\n                Label label1 = new Label(Integer.toString(i));\r\n                GridPane.setHalignment(label1, HPos.CENTER);\r\n                gridPane.add(label1,i+1,0);\r\n                gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH));\r\n            }\r\n            for(int i = 0; i < ur.y;i++){\r\n                Label label1 = new Label(Integer.toString(i));\r\n                GridPane.setHalignment(label1, HPos.CENTER);\r\n                gridPane.add(label1,0,ur.y-i);\r\n                gridPane.getRowConstraints().add(new RowConstraints(tileWH));\r\n            }\r\n//            System.out.println(greenerGrass[0]);\r\n//            System.out.println(greenerGrass[1]);\r\n            for(int i = 0; i < map.getWidth();i++){\r\n                for(int j = 0; j < map.getHeight(); j++){\r\n                    Vector2d v2 = new Vector2d(i,j);\r\n                    if(v2.between(greenerGrass)) {\r\n                        Pane pane = new Pane();\r\n                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),\r\n                                new CornerRadii(0), new Insets(0))));\r\n                        gridPane.add(pane, i + 1, ur.y - j);\r\n                    }else {\r\n                        Pane pane = new Pane();\r\n                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(152, 251, 152),\r\n                                new CornerRadii(0), new Insets(0))));\r\n                        gridPane.add(pane, i + 1, ur.y - j);\r\n                    }\r\n\r\n                    if(map.animalsAt(v2) != null && map.animalsAt(v2).size()>1){\r\n                        ImageView im = new ImageView(gub.get(\"src\\\\main\\\\resources\\\\images\\\\love.png\"));\r\n                        im.setFitHeight(tileWH);\r\n                        im.setFitWidth(tileWH);\r\n                        imageViews.add(im);\r\n                        gridPane.add(im,i+1,ur.y-j);\r\n                    }else if(map.animalsAt(v2) != null && map.animalsAt(v2).size()==1){\r\n                        ImageView im = new ImageView(gub.get(map.animalsAt(v2).get(0).getPath()));\r\n                        im.setFitHeight(tileWH);\r\n                        im.setFitWidth(tileWH);\r\n                        imageViews.add(im);\r\n                        gridPane.add(im,i+1,ur.y-j);\r\n                    }else if (map.getGrass(v2)!=null) {\r\n                        ImageView im = new ImageView(gub.get(map.getGrass(v2).getPath()));\r\n                        im.setFitHeight(tileWH);\r\n                        im.setFitWidth(tileWH);\r\n                        imageViews.add(im);\r\n                        gridPane.add(im,i+1,ur.y-j);\r\n                    }\r\n                }\r\n            }\r\n\r\n        });\r\n    }\r\n\r\n\r\n    @Override\r\n    public void run() {\r\n        stage.setTitle(\"Simulator\");\r\n        try {\r\n            gub = GuiElementBox.resources(\"src/main/resources/images\");\r\n        } catch (FileNotFoundException e) {\r\n            throw new RuntimeException(e);\r\n        }\r\n        try {\r\n            Long w = (Long) config.get(\"width\");\r\n            Long h = (Long) config.get(\"height\");\r\n            Long s = (Long) config.get(\"startingGrass\");\r\n            Long g = (Long) config.get(\"grassGain\");\r\n            Long e = (Long) config.get(\"energyGain\");\r\n            Long l = (Long) config.get(\"genomeLength\");\r\n            Long st = (Long) config.get(\"startingEnergy\");\r\n            Long f = (Long) config.get(\"fedAnimal\");\r\n            Long n = (Long) config.get(\"neededEnergy\");\r\n            Long min = (Long) config.get(\"minimalMutation\");\r\n            Long max = (Long) config.get(\"maximumMutation\");\r\n            map = new WorldMap(w.intValue(),h.intValue(), s.intValue(), g.intValue(),e.intValue(),l.intValue(),\r\n                    st.intValue(),f.intValue(),\r\n                    n.intValue(), min.intValue(),\r\n                    max.intValue(),new GreenEquator(), new FullRandomMutationer(),\r\n                    new DeterministicGenomeExecutioner(),\r\n                    new GlobeConstraint(w.intValue(),h.intValue()));\r\n            map.randomAnimals(100);\r\n            greenerGrass = map.grassSpawner.greenerGrass(map);\r\n            // gridPane and scrollPane\r\n            gridPane = new GridPane();\r\n            ScrollPane scrollPane = new ScrollPane(gridPane);\r\n            double scrollPaneEdge = Math.min(Screen.getPrimary().getBounds().getHeight()*0.8,\r\n                    Screen.getPrimary().getBounds().getWidth()*0.8);\r\n            scrollPane.setPrefSize(scrollPaneEdge ,scrollPaneEdge);\r\n\r\n            // todo statistics\r\n            // statistics\r\n            TextField textField = new TextField(\"Field for test, maybe statistics should be there?\");\r\n            Group statistics = new Group(textField);\r\n            HBox hBox = new HBox(statistics, scrollPane);\r\n            Group root = new Group(hBox);\r\n            scene = new Scene(root);\r\n\r\n            SimulationEngine SE = new SimulationEngine(map,this);\r\n            stage.setScene(scene);\r\n            stage.show();\r\n            System.out.println(map);\r\n            updateScene(SE);\r\n            Thread thread = new Thread(SE);\r\n            thread.start();\r\n\r\n    } catch (Exception e) {\r\n            throw new RuntimeException(e);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/agh/ics/oop/gui/Simulator.java b/src/main/java/agh/ics/oop/gui/Simulator.java
+--- a/src/main/java/agh/ics/oop/gui/Simulator.java	(revision 717ad6158d70ccf86671e8d315aff4b973f49e7a)
++++ b/src/main/java/agh/ics/oop/gui/Simulator.java	(date 1672321633095)
+@@ -33,11 +33,17 @@
+     JSONObject config;
+     Stage stage;
+     Scene scene;
++    long time;
++    Label id;
++    int iid;
++    Label Time;
+     WorldMap map;
+     GridPane gridPane;
+     Map<String, Image> gub = new HashMap<String,Image>();
+     ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
+     Vector2d[] greenerGrass;
++    VBox vBox;
++
+     static int tileWH = 15;
+     Simulator(JSONObject conf, Stage stage){
+         this.stage = stage;
+@@ -53,6 +59,11 @@
+             gridPane.add(label,0,0);
+             gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH*2));
+             gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));
++            Time = new Label(String.valueOf(System.currentTimeMillis()-time));
++            time = System.currentTimeMillis();
++            iid++;
++            id = new Label(String.valueOf(iid));
++            v
+ 
+             Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
+             for(int i = 0; i < ur.x;i++){
+@@ -67,8 +78,6 @@
+                 gridPane.add(label1,0,ur.y-i);
+                 gridPane.getRowConstraints().add(new RowConstraints(tileWH));
+             }
+-//            System.out.println(greenerGrass[0]);
+-//            System.out.println(greenerGrass[1]);
+             for(int i = 0; i < map.getWidth();i++){
+                 for(int j = 0; j < map.getHeight(); j++){
+                     Vector2d v2 = new Vector2d(i,j);
+@@ -147,9 +156,14 @@
+ 
+             // todo statistics
+             // statistics
++            iid = 0;
++            id = new Label(String.valueOf(iid));
++            time = System.currentTimeMillis();
++            Time = new Label(String.valueOf(time));
+             TextField textField = new TextField("Field for test, maybe statistics should be there?");
+-            Group statistics = new Group(textField);
+-            HBox hBox = new HBox(statistics, scrollPane);
++            Group statistics = new Group(textField,Time,id);
++            vBox = new VBox(textField,Time,id);
++            HBox hBox = new HBox(vBox, scrollPane);
+             Group root = new Group(hBox);
+             scene = new Scene(root);
+ 

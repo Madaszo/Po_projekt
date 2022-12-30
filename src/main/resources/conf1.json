@@ -3,7 +3,7 @@
   "height": 10,
   "startingGrass": 10,
   "grassGain": 1,
-  "energyGain": 5,
+  "energyGain": 10,
   "genomeLength": 8,
   "startingEnergy": 20,
   "fedAnimal": 10,

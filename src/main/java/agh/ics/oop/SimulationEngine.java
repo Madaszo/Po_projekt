@@ -20,6 +20,7 @@ public class SimulationEngine implements IEngine, Runnable{
                 for (Animal animal : mAnimals) {
                     animals.add(animal);
                     mapStats.animalBorn(animal);
+                    mapStats.deltaSumEnergy(animal.getEnergy());
                 }
             }
         }
@@ -36,6 +37,7 @@ public class SimulationEngine implements IEngine, Runnable{
             procreate();
             grassify();
 //            System.out.println(map);
+            mapStats.addSimulationTime();
             observer.updateScene(this);
         }
     }
@@ -59,6 +61,7 @@ public class SimulationEngine implements IEngine, Runnable{
     public void moveAnimals() {
         for(Animal animal: animals){
             animal.move();
+            mapStats.deltaSumEnergy(-1);
         }
     }
 
@@ -70,7 +73,9 @@ public class SimulationEngine implements IEngine, Runnable{
     @Override
     public void eat() throws Exception {
         for(Animal animal: animals){
-            animal.eat();
+            if (animal.eat()) {
+                mapStats.deltaSumEnergy(map.getEnergyGain());
+            }
         }
 
     }
@@ -78,11 +83,17 @@ public class SimulationEngine implements IEngine, Runnable{
     @Override
     public void procreate() {
         ArrayList<Animal> babies = new ArrayList<>();
-        for(Animal animal: animals){
-            Animal baby = animal.procreate();
-            if(baby != null){
-                babies.add(baby);
-                mapStats.animalBorn(baby);
+        for (int i = 0; i < map.getWidth(); i++) {
+            for (int j = 0; j < map.getHeight(); j++){
+                ArrayList<Animal> animals = map.animalsAt(new Vector2d(i, j));
+                if (animals != null && animals.size() > 1) {
+                    animals.sort(new AnimalComparator());
+                    Animal baby = animals.get(0).procreate();
+                    if (baby != null) {
+                        babies.add(baby);
+                        mapStats.animalBorn(baby);
+                    }
+                }
             }
         }
         animals.addAll(babies);
@@ -91,21 +102,22 @@ public class SimulationEngine implements IEngine, Runnable{
     @Override
     public void run() {
         while (true){
-            animals.sort(Comparator.comparing(Animal::getEnergy));
-            Collections.reverse(animals);
             try {
                 killAnimals();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             moveAnimals();
+            animals.sort(new AnimalComparator());
             try {
                 eat();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            animals.sort(new AnimalComparator());
             procreate();
             grassify();
+            mapStats.addSimulationTime();
             observer.updateScene(this);
             try {
                 waitForRunLater();

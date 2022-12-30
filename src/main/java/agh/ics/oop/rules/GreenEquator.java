@@ -12,10 +12,12 @@ public class GreenEquator implements IRuleSpawnGrass{
 		// todo Implement way of choosing appropiate grass places
 		int h = map.getHeight();
 		int w = map.getWidth();
-		int j,y;
+		int j,y,lic;
 		Vector2d tmp;
 		for(int i = 0; i<n;i++){
+			lic = 0;
 			do {
+				lic++;
 				Random rand = new Random();
 				j = rand.nextInt(100);
 				if (j > 80) {
@@ -28,6 +30,9 @@ public class GreenEquator implements IRuleSpawnGrass{
 						y = rand.nextInt(h);
 					} while (!((y >= (h / 2) - (h  / 10)) && (y < (h / 2) + (h / 10))));
 					tmp = new Vector2d(rand.nextInt(w), y);
+				}
+				if(lic>100){
+					return;
 				}
 			} while (map.isOccupiedByGrass(tmp));
 			map.place(new Grass(tmp));

@@ -65,10 +65,10 @@ public class Animal implements IMapElement{
                         new Animal(
                                 map,
                                 this.position,
-                                this.energy/2+sodoma.get(1).energy/2,
+                                this.energy/2 + sodoma.get(1).energy/2,
                                 this.createGenome(sodoma.get(1)), fedAnimal,neededEnergy);
-                this.energy/=2;
-                sodoma.get(1).energy/=2;
+                this.energy -= this.energy/2;
+                sodoma.get(1).energy -= sodoma.get(1).getEnergy()/2;
                 baby.direction = MapDirection.fromInt(random.nextInt(8));
                 offspringNum++;
                 return baby;
@@ -109,12 +109,14 @@ public class Animal implements IMapElement{
     public boolean isAt(Vector2d position){
         return this.position.equals(position);
     }
-    public void eat() throws Exception {
+    public boolean eat() throws Exception {
         if (map.isOccupiedByGrass(this.getPosition())){
             map.remove(map.getGrass(this.getPosition()));
             energy += map.getEnergyGain();
             this.eatenGrass++;
+            return true;
         }
+        return false;
     }
     public void move() {
         int d = genome[currentGene];

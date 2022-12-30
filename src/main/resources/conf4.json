@@ -1,8 +1,8 @@
 {
-  "width": 55,
-  "height": 55,
-  "startingGrass": 2800,
-  "grassGain":20,
+  "width": 25,
+  "height": 25,
+  "startingGrass": 100,
+  "grassGain": 10,
   "energyGain": 10,
   "genomeLength": 8,
   "startingEnergy": 20,
@@ -10,5 +10,5 @@
   "neededEnergy": 2,
   "minimalMutation": 0,
   "maximumMutation": 8,
-  "startingAnimals": 20
+  "startingAnimals": 5
 }
