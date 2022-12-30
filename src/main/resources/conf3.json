@@ -9,5 +9,6 @@
   "fedAnimal": 10,
   "neededEnergy": 2,
   "minimalMutation": 0,
-  "maximumMutation": 8
+  "maximumMutation": 8,
+  "startingAnimals": 100
 }

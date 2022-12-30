@@ -75,31 +75,11 @@ public class Simulator implements EngineObserver, Runnable {
         GridPane.setHalignment(label, HPos.CENTER);
         gridPane.add(label,0,0);
 
-        Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
-        for(int i = 0; i < ur.x;i++){
-            Label label1 = new Label(Integer.toString(i));
-            GridPane.setHalignment(label1, HPos.CENTER);
-            gridPane.add(label1,i+1,0);
-        }
-        for(int i = 0; i < ur.y;i++){
-            Label label1 = new Label(Integer.toString(i));
-            GridPane.setHalignment(label1, HPos.CENTER);
-            gridPane.add(label1,0,ur.y-i);
-        }
-        for(int i = 0; i < map.getWidth();i++){
-            for(int j = 0; j < map.getHeight(); j++){
-                Vector2d v2 = new Vector2d(i,j);
-                if(v2.between(greenerGrass)) {
-                    Pane pane = new Pane();
-                    pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),
-                            new CornerRadii(0), new Insets(0))));
-                    gridPane.add(pane, i + 1, ur.y - j);
-                }else {
-                    Pane pane = new Pane();
-                    pane.setBackground(new Background(new BackgroundFill(Color.rgb(152, 251, 152),
-                            new CornerRadii(0), new Insets(0))));
-                    gridPane.add(pane, i + 1, ur.y - j);
-                }
+            Vector2d ur = new Vector2d(map.getWidth(),map.getHeight());
+            for(int i = 0; i < map.getWidth();i++){
+                for(int j = 0; j < map.getHeight(); j++){
+                    Vector2d v2 = new Vector2d(i,j);
+
 
                 if(map.animalsAt(v2) != null && map.animalsAt(v2).size()>1){
                     ImageView im = new ImageView(gub.get("src\\main\\resources\\images\\love.png"));
@@ -158,13 +138,14 @@ public class Simulator implements EngineObserver, Runnable {
             Long n = (Long) config.get("neededEnergy");
             Long min = (Long) config.get("minimalMutation");
             Long max = (Long) config.get("maximumMutation");
+            Long animals = (Long) config.get("startingAnimals");
             map = new WorldMap(w.intValue(),h.intValue(), s.intValue(), g.intValue(),e.intValue(),l.intValue(),
                     st.intValue(),f.intValue(),
                     n.intValue(), min.intValue(),
                     max.intValue(),new GreenEquator(), new FullRandomMutationer(),
                     new DeterministicGenomeExecutioner(),
                     new GlobeConstraint(w.intValue(),h.intValue()));
-            map.randomAnimals(100);
+            map.randomAnimals(animals.intValue());
             greenerGrass = map.grassSpawner.greenerGrass(map);
 
             // GRID INITIALIZATION
@@ -173,11 +154,32 @@ public class Simulator implements EngineObserver, Runnable {
             gridPane.getRowConstraints().add(new RowConstraints(tileWH*2));
             for(int i = 0; i < map.getWidth();i++){
                 gridPane.getColumnConstraints().add(new ColumnConstraints(tileWH));
+                Label label1 = new Label(Integer.toString(i));
+                GridPane.setHalignment(label1, HPos.CENTER);
+                gridPane.add(label1,i+1,0);
             }
             for(int i = 0; i < map.getHeight();i++){
                 gridPane.getRowConstraints().add(new RowConstraints(tileWH));
+                Label label1 = new Label(Integer.toString(i));
+                GridPane.setHalignment(label1, HPos.CENTER);
+                gridPane.add(label1,0,map.getHeight()-i);
             }
-
+            for(int i = 0; i < map.getWidth();i++) {
+                for (int j = 0; j < map.getHeight(); j++) {
+                    Vector2d v2 = new Vector2d(i,j);
+                    if(v2.between(greenerGrass)) {
+                        Pane pane = new Pane();
+                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),
+                                new CornerRadii(0), new Insets(0))));
+                        gridPane.add(pane, i + 1, map.getHeight() - j);
+                    }else {
+                        Pane pane = new Pane();
+                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(152, 251, 152),
+                                new CornerRadii(0), new Insets(0))));
+                        gridPane.add(pane, i + 1, map.getHeight() - j);
+                    }
+                }
+            }
             ScrollPane scrollPane = new ScrollPane(gridPane);
             double scrollPaneEdge = Math.min(Screen.getPrimary().getBounds().getHeight()*0.8,
                     Screen.getPrimary().getBounds().getWidth()*0.8);
