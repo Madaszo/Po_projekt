@@ -2,7 +2,7 @@
   "width": 10,
   "height": 15,
   "startingGrass": 10,
-  "grassGain": 1,
+  "grassGain": 2,
   "energyGain": 10,
   "genomeLength": 8,
   "startingEnergy": 20,
@@ -10,5 +10,5 @@
   "neededEnergy": 2,
   "minimalMutation": 0,
   "maximumMutation": 8,
-  "startingAnimals": 5
+  "startingAnimals": 10
 }

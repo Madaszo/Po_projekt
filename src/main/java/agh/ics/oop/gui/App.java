@@ -2,8 +2,6 @@ package agh.ics.oop.gui;
 
 import agh.ics.oop.ConfigurationReader;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -36,7 +34,7 @@ public class App extends Application {
     public void init(){
         // CONFIG CHOOSER SETTINGS
         configChooser.setTitle("Choose a configuration");
-        configChooser.setInitialDirectory(new File("src/main/resources/"));
+        configChooser.setInitialDirectory(new File("src/main/resources/configurations/"));
         configChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("JSON", "*.json")
         );
