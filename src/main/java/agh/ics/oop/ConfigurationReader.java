@@ -11,10 +11,7 @@ import java.io.IOException;
 public class ConfigurationReader {
     public  JSONObject readFromFile(File confFile) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
-        System.out.println(confFile.getPath());
         FileReader fileReader = new FileReader(confFile);
-        JSONObject o = (JSONObject) parser.parse(fileReader);
-        System.out.println(o);
-        return o;
+        return (JSONObject) parser.parse(fileReader);
     }
 }
