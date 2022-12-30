@@ -110,8 +110,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 	@Override
 	public void randomAnimals(int n) {
-		int[] genome = new int[genomeLength];
 		for(int i = 0; i < n; i++){
+			int[] genome = new int[genomeLength];
 			for (int j = 0; j < genomeLength; j++){
 				genome[j] = random.nextInt(8);
 			}
