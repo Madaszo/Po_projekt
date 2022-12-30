@@ -114,13 +114,14 @@ public class Simulator implements EngineObserver, Runnable {
             Long n = (Long) config.get("neededEnergy");
             Long min = (Long) config.get("minimalMutation");
             Long max = (Long) config.get("maximumMutation");
+            Long animals = (Long) config.get("startingAnimals");
             map = new WorldMap(w.intValue(),h.intValue(), s.intValue(), g.intValue(),e.intValue(),l.intValue(),
                     st.intValue(),f.intValue(),
                     n.intValue(), min.intValue(),
                     max.intValue(),new GreenEquator(), new FullRandomMutationer(),
                     new DeterministicGenomeExecutioner(),
                     new GlobeConstraint(w.intValue(),h.intValue()));
-            map.randomAnimals(100);
+            map.randomAnimals(animals.intValue());
             greenerGrass = map.grassSpawner.greenerGrass(map);
 
             // GRID INITIALIZATION
