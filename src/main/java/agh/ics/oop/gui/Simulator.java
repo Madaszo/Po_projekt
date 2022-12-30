@@ -23,11 +23,15 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Simulator implements EngineObserver, Runnable {
     JSONObject config;
@@ -36,10 +40,11 @@ public class Simulator implements EngineObserver, Runnable {
     WorldMap map;
     SimulationEngine SE;
     MapStats mapStats;
+    FileWriter csvWriter;
     Thread simEngineThread;
     GridPane gridPane;
-    Map<String, Image> gub = new HashMap<String,Image>();
-    ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
+    Map<String, Image> gub = new HashMap<>();
+    ArrayList<ImageView> imageViews = new ArrayList<>();
     Vector2d[] greenerGrass;
 
     // statistics fields
@@ -57,14 +62,34 @@ public class Simulator implements EngineObserver, Runnable {
 
     static int tileWH = 15;
     Simulator(JSONObject conf, Stage stage){
+        this(conf, stage, null);
+    }
+
+    Simulator(JSONObject conf, Stage stage, File csvFile) {
         this.stage = stage;
         this.config = conf;
+        this.csvWriter = null;
+
+        // csv_file initialization
+        if (csvFile != null) {
+            try {
+                csvFile.createNewFile();
+                csvWriter = new FileWriter(csvFile);
+                csvWriter.write("Days of simulation,Num. of animals,Num. of plants,Num. of free tiles,The most popular genome,The most popular genome population,Average energy level,Average lifespan\n");
+            } catch (Exception ex) {
+                throw new RuntimeException("Couldn't create or write in csv file in given directory", ex);
+            }
+        }
     }
 
     public void updateScene(SimulationEngine SE) {
         Platform.runLater(()->{
             updateGrid();
-            updateStatistics();
+            try {
+                updateStatistics();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -104,7 +129,7 @@ public class Simulator implements EngineObserver, Runnable {
         }
     }
 
-    private void updateStatistics() {
+    private void updateStatistics() throws IOException {
         simulationTime.setText(String.valueOf(mapStats.getSimulationTime()));
         numOfAnimals.setText(String.valueOf(mapStats.getNumOfAnimals()));
         numOfPlants.setText(String.valueOf(mapStats.getNumOfGrasses()));
@@ -115,6 +140,19 @@ public class Simulator implements EngineObserver, Runnable {
         averageLifespan.setText(String.format("%.2f", mapStats.getAvgLifespan()));
         animalSeries.getData().add(new XYChart.Data<>(mapStats.getSimulationTime(), mapStats.getNumOfAnimals()));
         grassSeries.getData().add(new XYChart.Data<>(mapStats.getSimulationTime(), mapStats.getNumOfGrasses()));
+
+        if (csvWriter != null) {
+            csvWriter.append("" + mapStats.getSimulationTime() + ',' +
+                    mapStats.getNumOfAnimals() + ',' +
+                    mapStats.getNumOfGrasses() + ',' +
+                    mapStats.getFreeTilesNum() + ',' +
+                    Arrays.stream(mapStats.getMostPopularGenome()).mapToObj(i -> ((Integer) i).toString()).collect(Collectors.joining("")) + ',' +
+                    mapStats.getMostPopularGenomeNum() + ',' +
+                    mapStats.getAvgEnergy() + ',' +
+                    mapStats.getAvgLifespan() + ',' +
+                    "\n");
+            csvWriter.flush();
+        }
     }
 
 
@@ -200,10 +238,10 @@ public class Simulator implements EngineObserver, Runnable {
 
             // STATISTICS INITIALIZATION
             VBox statsBox = new VBox(new Label("Simulation statistics:"),
-                    new HBox(new Label("Simulation time: "), simulationTime),
-                    new HBox(new Label("Number of animals: "), numOfAnimals),
-                    new HBox(new Label("Number of plants: "), numOfPlants),
-                    new HBox(new Label("Number of free tiles: "), numOfFreeTiles),
+                    new HBox(new Label("Days of simulation: "), simulationTime),
+                    new HBox(new Label("Num. of animals: "), numOfAnimals),
+                    new HBox(new Label("Num. of plants: "), numOfPlants),
+                    new HBox(new Label("Num. of free tiles: "), numOfFreeTiles),
                     new HBox(new Label("The most popular genome "), mostPopularGenome, new Label(" has "), mostPopularGenomeNum, new Label(" representatives")),
                     new HBox(new Label("Average energy level: "), averageEnergyLevel),
                     new HBox(new Label("Average lifespan: "), averageLifespan),
@@ -217,8 +255,6 @@ public class Simulator implements EngineObserver, Runnable {
             mapStats = SE.mapStats;
             stage.setScene(scene);
             stage.show();
-            System.out.println(map);
-            updateScene(SE);
             simEngineThread = new Thread(SE);
             simEngineThread.start();
 

@@ -1,6 +1,8 @@
 package agh.ics.oop;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * This object stores statistics of one {@link SimulationEngine} and its {@link IMap} object
@@ -13,7 +15,7 @@ public class MapStats {
 	public int sumEnergy = 0;
 	private int numOfDeadAnimals = 0;
 	private int sumLifespan = 0;
-	private final HashMap<int[], Integer> genomesPopularity = new HashMap<>();
+	private final TreeMap<int[], Integer> genomesPopularity = new TreeMap<>(Arrays::compare);
 
 	public MapStats(IEngine engine, IMap map) {
 		this.engine = engine;
@@ -41,7 +43,7 @@ public class MapStats {
 		return genomesPopularity.entrySet().stream().max((ent1, ent2) -> ent1.getValue() - ent2.getValue()).get().getKey();
 	}
 	public int getMostPopularGenomeNum() {
-		return genomesPopularity.entrySet().stream().max((ent1, ent2) -> ent1.getValue() - ent2.getValue()).get().getValue();
+		return genomesPopularity.get(getMostPopularGenome());
 	}
 
 	public void addSimulationTime() {
@@ -51,7 +53,6 @@ public class MapStats {
 	public void animalBorn(Animal animal) {
 		this.numOfAnimals++;
 		int[] genome = animal.getGenome();
-
 		genomesPopularity.putIfAbsent(genome, 0);
 		genomesPopularity.put(genome, genomesPopularity.get(genome) + 1);
 	}
@@ -63,7 +64,12 @@ public class MapStats {
 
 		int[] genome = animal.getGenome();
 
-		genomesPopularity.replace(genome, genomesPopularity.get(genome) - 1);
+		if (genomesPopularity.get(genome) == 1) {
+			genomesPopularity.remove(genome);
+		} else {
+			genomesPopularity.put(genome, genomesPopularity.get(genome) - 1);
+		}
+
 	}
 
 	public void deltaSumEnergy(int energyChange) {

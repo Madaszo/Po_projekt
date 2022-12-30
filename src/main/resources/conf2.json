@@ -4,11 +4,11 @@
   "startingGrass": 100,
   "grassGain": 5,
   "energyGain": 25,
-  "genomeLength": 2,
+  "genomeLength": 4,
   "startingEnergy": 25,
   "fedAnimal": 10,
   "neededEnergy": 2,
   "minimalMutation": 0,
   "maximumMutation": 8,
-  "startingAnimals": 50
+  "startingAnimals": 150
 }
