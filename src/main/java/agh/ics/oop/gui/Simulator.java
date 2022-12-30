@@ -169,7 +169,7 @@ public class Simulator implements EngineObserver, Runnable {
                     Vector2d v2 = new Vector2d(i,j);
                     if(v2.between(greenerGrass)) {
                         Pane pane = new Pane();
-                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 100, 0),
+                        pane.setBackground(new Background(new BackgroundFill(Color.rgb(0, 128, 0),
                                 new CornerRadii(0), new Insets(0))));
                         gridPane.add(pane, i + 1, map.getHeight() - j);
                     }else {

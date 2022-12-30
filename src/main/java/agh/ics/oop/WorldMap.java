@@ -11,6 +11,8 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 	public Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
 	final private Map<Vector2d, Grass> grasses = new HashMap<>();
 	private final int width;
+
+	Random random = new Random();
 	private final int height;
 	private final int fedAnimal;
 	int freeTiles;
@@ -108,7 +110,6 @@ public class WorldMap implements IMap, IPositionChangeObserver {
 
 	@Override
 	public void randomAnimals(int n) {
-		Random random = new Random();
 		int[] genome = new int[genomeLength];
 		for(int i = 0; i < n; i++){
 			for (int j = 0; j < genomeLength; j++){
