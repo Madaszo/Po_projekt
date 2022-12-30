@@ -64,7 +64,12 @@ public class MapStats {
 
 		int[] genome = animal.getGenome();
 
-		genomesPopularity.replace(genome, genomesPopularity.get(genome) - 1);
+		if (genomesPopularity.get(genome) == 1) {
+			genomesPopularity.remove(genome);
+		} else {
+			genomesPopularity.put(genome, genomesPopularity.get(genome) - 1);
+		}
+
 	}
 
 	public void deltaSumEnergy(int energyChange) {

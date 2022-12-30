@@ -200,10 +200,10 @@ public class Simulator implements EngineObserver, Runnable {
 
             // STATISTICS INITIALIZATION
             VBox statsBox = new VBox(new Label("Simulation statistics:"),
-                    new HBox(new Label("Simulation time: "), simulationTime),
-                    new HBox(new Label("Number of animals: "), numOfAnimals),
-                    new HBox(new Label("Number of plants: "), numOfPlants),
-                    new HBox(new Label("Number of free tiles: "), numOfFreeTiles),
+                    new HBox(new Label("Days of simulation: "), simulationTime),
+                    new HBox(new Label("Num. of animals: "), numOfAnimals),
+                    new HBox(new Label("Num. of plants: "), numOfPlants),
+                    new HBox(new Label("Num. of free tiles: "), numOfFreeTiles),
                     new HBox(new Label("The most popular genome "), mostPopularGenome, new Label(" has "), mostPopularGenomeNum, new Label(" representatives")),
                     new HBox(new Label("Average energy level: "), averageEnergyLevel),
                     new HBox(new Label("Average lifespan: "), averageLifespan),
